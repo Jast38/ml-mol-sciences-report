@@ -18,10 +18,15 @@ jobs:
         uses: xu-cheng/latex-action@v2
         with:
           root_file: ml-mol-sciences-report.tex
+          post_compile: "latexmk -c"
 
       - name: Copy to gh-pages
-        uses: planetoftheweb/copy-to-branches@v1.2
-        env:
-          key: main
-          branches: gh-pages
-          files: ml-mol-sciences-report.pdf
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+        run: |
+          git config --local user.email "jannick.stuby@gmail.com"
+          git config --local user.name "${{CI_COMMIT_AUTHOR}}"
+          git add ml-mol-sciences-report.pdf
+          git commit -m "${{CI_COMMIT_MESSAGE}}"
+          git push --set-upstream origin gh-pages
