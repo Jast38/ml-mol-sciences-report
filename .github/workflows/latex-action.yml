@@ -11,13 +11,24 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v3
 
+      - name: Check for changed files
+        uses: dorny/paths-filter@v2.11.1
+        id: changes
+        with:
+          filters: |
+            tex:
+              - '**/*.tex'
+
+
       - name: Compile LaTeX document
+        if: ${{ steps.changes.outputs.tex == 'true' }}
         uses: xu-cheng/latex-action@v2
         with:
           root_file: ml-mol-sciences-report.tex
           post_compile: "latexmk -c"
 
       - name: Checkout gh-pages
+        if: ${{ steps.changes.outputs.tex == 'true' }}
         uses: actions/checkout@v3
         with:
           ref: gh-pages
