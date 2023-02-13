@@ -26,6 +26,11 @@ jobs:
         with:
           root_file: ml-mol-sciences-report.tex
           post_compile: "latexmk -c"
+      
+      - name: Move pdf to runner temp
+        if: ${{ steps.changes.outputs.tex == 'true' }}
+        run: |
+          mv ml-mol-sciences-report.pdf ${{ runner.temp }}
 
       - name: Checkout gh-pages
         if: ${{ steps.changes.outputs.tex == 'true' }}
@@ -33,10 +38,14 @@ jobs:
         with:
           ref: gh-pages
         
+      - name: Move pdf from runner temp
+        if: ${{ steps.changes.outputs.tex == 'true' }}
+        run: |
+          mv ${{ runner.temp }}/ml-mol-sciences-report.pdf .
+        
       - name: commit to gh-pages
         if: ${{ steps.changes.outputs.tex == 'true' }}
         run: |
-          ls -al
           git config --local user.email "jannick.stuby@gmail.com"
           git config --local user.name "Continuous Integration"
           git add ml-mol-sciences-report.pdf
