@@ -20,10 +20,12 @@ jobs:
           root_file: ml-mol-sciences-report.tex
           post_compile: "latexmk -c"
 
-      - name: Copy to gh-pages
+      - name: Checkout gh-pages
         uses: actions/checkout@v3
         with:
           ref: gh-pages
+        
+      -name: commit to gh-pages
         run: |
           git config --local user.email "jannick.stuby@gmail.com"
           git config --local user.name "${{CI_COMMIT_AUTHOR}}"
