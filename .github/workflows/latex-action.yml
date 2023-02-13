@@ -1,17 +1,27 @@
 name: Build LaTeX document
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+
 jobs:
   build_latex:
     runs-on: ubuntu-latest
+    env: 
+      CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
+      CI_COMMIT_AUTHOR: Continuous Integration
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v3
+
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
           root_file: ml-mol-sciences-report.tex
-      - name: Upload PDF file
-        uses: actions/upload-artifact@v3
-        with:
-          name: PDF
-          path: ml-mol-sciences-report.pdf
+
+      - name: Copy to gh-pages
+        uses: planetoftheweb/copy-to-branches@v1
+        env:
+          key: main
+          branches: gh-pages
+          files: ml-mol-sciences-report.pdf
