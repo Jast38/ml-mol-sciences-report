@@ -1,29 +1,37 @@
-\section{Related Work}
+\section{Preliminary}
 
 As we started our project examining DeepChem, we first looked into handcrafted graph to vector methods.
 
 Later we looked into graph machine learning.
 
 \subsection{Open Graph Benchmark}
-TODO: Add information on OGB and leaderboard
+Open Graph Benchmark(OGB)~\cite{2021ogb} is a framework for benchmarking machine learning on graphs, providing large-scale, real world datasets as well as an easy to use software framework for loading  datasets and evaluating model performance.
+For comparing model performances, OGB provides leaderboards for different datasets and challenges, split into the sections Node Property Prediction, Link Property Prediction and Graph Property Prediction, as well as a large-scale challenge~\cite{hu2021ogblsc} leaderboard, which aids comparison of performance on very large graphs.
+
+Our main focus will be Graph Property Prediction, mainly on the datasets ogb-molhiv and ogb-molpcba. Both these datasets are derived from MoleculeNet and respectively provide a large amount of molecules for molecular property prediction. Molecules are represented by graphs, where atoms are the nodes and corresponding chemical bonds are represented by the edges. \todo{\tiny add input node features (9-dimensional), perhaps table?}
+
+For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Precision is used.
+
+We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018. 
+
 
 \subsection{Graph Embedding}
 TODO: Add information on graph embedding relevant to problem domain
 
 \subsubsection{doc2vec}
-TODO: explain doc2vec approach with respect to problem domain, possibly move to another section (paragraph/word embedding)
+TODO: explain doc2vec according to \cite{2014doc2vec} approach with respect to problem domain, possibly move to another section (paragraph/word embedding)
 
 \subsubsection{graph2vec}
-TODO: explain graph2vec approach with respect to problem domain
+TODO: explain graph2vec \cite{2017graph2vec} approach with respect to problem domain
 
 \subsection{Graph Transformers}
-TODO: add information for Graph Transformers and their usage for the problem domain and OGB leaderboards
+TODO: add information for Graph Transformers \cite{2020graphTransformers} \cite{li2019graphTransformer} \cite{cai2019graphTransformerSequence} \cite{dwivedi2021generalizationTransformer} and their usage for the problem domain and OGB leaderboards
 
 \subsubsection{Graphormer}
-TODO: explain Graphormer approach for OGB leaderboards
+TODO: explain Graphormer \cite{2021graphormer} approach for OGB leaderboards
 
 \subsubsection{GraphGPS}
-TODO: explain GPS framework, recipes and focus on our uses
+TODO: explain GPS framework \cite{2023graphgps}, recipes and focus on our uses
 
 \subsubsection{Heterogeneous Interpolation on Graphs}
 TODO: briefly explain and focus on our possible usage
