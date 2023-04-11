@@ -1,0 +1,48 @@
+\subsection{Walk based graph embeddings}
+
+One of the  primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. We considered the possibility of using graph walks to represent a graph. These walks would produce two-dimensional data that we could embed using methods to embed text.
+
+Our main point of research was the embedding of whole graphs, as the a similar method to embed nodes already exists (node2vec). We also focused on the dataset 'ogbg-molhiv'.
+
+\subsubsection{walk to vector}
+A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes, e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For one graph commonly there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph.
+
+Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{\ w_i \mid i \in 0 \dots n  \}$. Now we create a set $W'$ where for each walk we substitute the node id with the features of the node. If we view each walk as sentence we get a set of documents (multiple sentences). These documents are feed into a text embedding method.
+
+
+\begin{minipage}{\linewidth}
+    \begin{algorithm}[H]
+        %\SetKwSty{text}
+        \DontPrintSemicolon
+        \SetArgSty{text}
+        \SetProgSty{text}
+        \SetKw{KwIn}{in}
+
+        \SetKwProg{Fn}{def}{}{}
+
+        \caption{basic idea of our walk based embedding}
+
+        \Fn{get\_vectors(graphs)}{
+            documents = [ ]\;
+            \ForAll{graph \KwIn graphs}{
+                this\_graphs\_walks = generate\_walks(graph)\;
+                this\_graphs\_sentences = generate\_sentences(this\_graphs\_walks)\;
+                documents.append(this\_graphs\_sentences)\;
+            }
+
+            model = Text\_Embedding\_Model()\;
+            model.fit(documents)\;
+            \Return model.get\_document\_vectors()\;
+        }
+    \end{algorithm}
+\end{minipage}
+
+\subsubsection{Generate the random walks}
+We focused on two ways to generate walks: random walks and shortest paths.
+
+Generating all pair shortest paths of a graph guarantees to include all information of that graph.
+
+Random walks don't guarantee that, but offer other usefull options. If the random walks methods favours
+
+%A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge.
+%A random walk is a walk where the next vertex is chosen randomly from the set of vertices that are connected to the current vertex.
