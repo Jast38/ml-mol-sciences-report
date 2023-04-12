@@ -12,6 +12,8 @@ Our main focus will be Graph Property Prediction, mainly on the datasets ogb-mol
 
 For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Precision is used.
 
+We additionally used ogb-molfreesolv as a smaller dataset which is also derived from MoleculeNet. FreeSolv contains SMILES strings of molecules from the Free Solvation Database and consists of "experimental and calculated hydration free energy of small molecules in water" \todo{\tiny add citation see moleculeNet paper}. The model is evaluated using Root Mean Square Error.
+
 We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018. 
 
 
@@ -25,12 +27,20 @@ TODO: explain doc2vec according to \cite{2014doc2vec} approach with respect to p
 TODO: explain graph2vec \cite{2017graph2vec} approach with respect to problem domain
 
 \subsection{Graph Transformers}
-TODO: add information for Graph Transformers \cite{2020graphTransformers} \cite{li2019graphTransformer} \cite{cai2019graphTransformerSequence} \cite{dwivedi2021generalizationTransformer} and their usage for the problem domain and OGB leaderboards
+TODO: add information for Graph Transformers \cite{2020graphTransformers} \cite{li2019graphTransformer} \cite{cai2019graphTransformerSequence} \cite{dwivedi2021generalizationTransformer} and their usage for the problem domain and OGB leaderboards \todo{\tiny remove this section and merge with Graphormer Section/replace by general Transformer}
+
+With the success of Transformers~\cite{vaswani2017attention} for NLP problems \todo{\tiny cite success information}, Dwivedi et al. introduced Graph Transformers as a generalization of Transformers usable for arbitrary graphs~\cite{dwivedi2021generalizationTransformer} 
 
 \subsubsection{Graphormer}
 As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks.
 
-Graphormer achieves such good results by introducing three types of encodings to incorporate structural information of graphs in the feature vectors of nodes and edges.
+Graphormer achieves such good results by introducing three types of encodings to incorporate structural information of graphs in the feature vectors of nodes and edges. 
+
+To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing two new vectors for each node, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are learnable scalars which are added to the node features, so node importance and semantic correlation are respected during self attention. \todo{\tiny add more information about learnable scalars, add general transforer structure to explain queries and keys}
+
+The second encoding, called spatial encoding, is used to capture positional information for each node with respect to the network. This is achieved by using the distance of the shortest path between connected nodes and, once again, using a learnable scalar which is added as bias in the self-attention module. By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
+
+Finally Graphormer introduces a method to include edge information in the model by adding an additional bias term to the attention module. This bias is created by averaging the dot-products of edge features and a learnable scalar of the edges describing the shortest path between each two connected nodes. \todo{\tiny perhaps add equations according to Transformer and Graphormer paper} 
 
 \subsubsection{GraphGPS}
 TODO: explain GPS framework \cite{2023graphgps}, recipes and focus on our uses
