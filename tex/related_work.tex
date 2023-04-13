@@ -43,7 +43,11 @@ The second encoding, called spatial encoding, is used to capture positional info
 Finally Graphormer introduces a method to include edge information in the model by adding an additional bias term to the attention module. This bias is created by averaging the dot-products of edge features and a learnable scalar of the edges describing the shortest path between each two connected nodes. \todo{\tiny perhaps add equations according to Transformer and Graphormer paper} 
 
 \subsubsection{GraphGPS}
-TODO: explain GPS framework \cite{2023graphgps}, recipes and focus on our uses
+L. Rampásek et al. introduced GraphGPS in their paper "Recipe for a General, Powerful, Scalable Graph Transformer. "\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.
+
+GraphGPS serves as a preprocessor for the actual model learning on the dataset. The authors tested GraphGPS with several models, such as Transformer, Performer, BigBird, Gine, and more. They designed it to allow models that permit only Node Features, known as the Global Attention layer, as well as models that permit both Node and Edge Features, known as the MPNN layer. Both layers can also be used in combination to integrate the distinct advantages of two models.
+
+The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
 
 \subsubsection{Heterogeneous Interpolation on Graphs}
 TODO: briefly explain and focus on our possible usage
