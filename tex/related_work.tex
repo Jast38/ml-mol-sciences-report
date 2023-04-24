@@ -50,4 +50,16 @@ GraphGPS serves as a preprocessor for the actual model learning on the dataset. 
 The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
 
 \subsubsection{Heterogeneous Interpolation on Graphs}
-TODO: briefly explain and focus on our possible usage
+A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cite{tencenc2021Hig,tencenc2021HigPaper} was submitted to the OGB leaderboard in 2021 by Wang et al., providing an implementation and a brief technical report describing the research. By using their method combined with Graphormer, they were able to achieve better average precision than all previous submissions. 
+
+The report introduces heterogeneous interpolation, which is done by clearing dropping the feature vector of several randomly selected nodes and replacing those feature vectors with the interpolated feature mix of all neighboring nodes.
+By using a mixing ratio, the influence of each neighbors features can be adapted. To account for possible information loss, KL-Divergence constraint loss ist added. By doing that, the distributions of two identical graphs remain similar after interpolating some feature vectors. The general idea was visualized by Wang et al. in \ref*{hig_figure}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.3]{tex/res/hig_figure.png}
+    \label{hig_figure}
+    \caption{Visualization of HIG-GraphClassification by Wang et al., taken from~\cite{tencenc2021HigPaper}}
+\end{figure}
+
+We combine the idea of interpolating feature vectors of neighboring nodes with GraphGPS to test performance with different embedding methods. 
