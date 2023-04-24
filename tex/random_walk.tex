@@ -1,14 +1,55 @@
 \subsection{Walk based graph embeddings}
 
-One of the  primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. We considered the possibility of using graph walks to represent a graph. These walks would produce two-dimensional data that we could embed using methods to embed text.
+One of the primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality.
 
-Our main point of research was the embedding of whole graphs, as the a similar method to embed nodes already exists (node2vec). We also focused on the dataset 'ogbg-molhiv'.
+For our walk based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (node2vec TODO). The downstream task after the embedding of the graph is either regression or classification. For this we use sklearn.
 
-\subsubsection{walk to vector}
-A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes, e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For one graph commonly there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph.
+\subsubsection{walks to vector}
+A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id), e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
 
-Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{\ w_i \mid i \in 0 \dots n  \}$. Now we create a set $W'$ where for each walk we substitute the node id with the features of the node. If we view each walk as sentence we get a set of documents (multiple sentences). These documents are feed into a text embedding method.
+\begin{figure}[h!]
+    \begin{minipage}{\linewidth}
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node[draw=red] (A) at (0,0) {0\\(0, 2, 2)};
+                    \node (B) at (0,4) {1\\(7, 0, 4)};
+                    \node (C) at (2.5,4) {2\\(2, 0, 4)};
+                    \node[draw=red] (D) at (2.5,2) {3\\(8, 3, 9)};
+                    \node (E) at (5, 0) {4\\(3, 4, 7)};
+                    \node[draw=red] (F) at (5,4) {5\\(2, 1, 7)} ;
+                \end{scope}
 
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (B) edge node {} (C);
+                    \path [-, draw=red] (A) edge node {} (D);
+                    \path [-] (D) edge node {} (C);
+                    \path [-] (A) edge node {} (E);
+                    \path [-] (D) edge node {} (E);
+                    \path [-, draw=red] (D) edge node {} (F);
+                    \path [-] (C) edge node {} (F);
+                    \path [-] (E) edge node {} (F);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+        \begin{minipage}{.5\linewidth}
+            \centering
+            (0, 3, 5) \\
+            (0\_0 1\_2 2\_2) (0\_8 1\_3 2\_9) (0\_2 1\_1 2\_7) \\
+            0\_0 1\_2 2\_2 0\_8 1\_3 2\_9 0\_2 1\_1 2\_7
+        \end{minipage}
+    \end{minipage}
+    \caption[short]{Example of graph on which a walk is done that is converted into a sentence}
+    \label{figure:example_walk_to_sentence}
+\end{figure}
+
+Lets talk about a concrete example. In the left side of figure \ref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
+
+After this overview, we can formalize this method. Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{\ w_i \mid i \in 0 \dots n  \}$. Now we create a set $W'$ where for each walk we substitute the node id with the features of the node. If we view each walk as sentence we get a set of documents (multiple sentences). These documents are feed into a text embedding method.
 
 \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
@@ -20,29 +61,36 @@ Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the numb
 
         \SetKwProg{Fn}{def}{}{}
 
-        \caption{basic idea of our walk based embedding}
-
         \Fn{get\_vectors(graphs)}{
             documents = [ ]\;
             \ForAll{graph \KwIn graphs}{
-                this\_graphs\_walks = generate\_walks(graph)\;
-                this\_graphs\_sentences = generate\_sentences(this\_graphs\_walks)\;
-                documents.append(this\_graphs\_sentences)\;
+                walks = generate\_walks(graph)\;
+                document = walks\_to\_document(walks)\;
+                documents.append(document)\;
             }
 
             model = Text\_Embedding\_Model()\;
             model.fit(documents)\;
             \Return model.get\_document\_vectors()\;
         }
+
+        \caption{basic idea of our walk based embedding}
+        \label{algorithm:basic_idea_walk_to_vector}
     \end{algorithm}
 \end{minipage}
 
+Pseudocode for our first implementation of our graph embedding method is given in algorithm \ref{algorithm:basic_idea_walk_to_vector}. We identified two ways to influence the embedding in a meaningful way:
+\begin{enumerate}
+    \item 
+    change the way walks a generated (lin)
+
+    \item
+    change the text embedding model
+\end{enumerate}
+
 \subsubsection{Generate the random walks}
-We focused on two ways to generate walks: random walks and shortest paths.
+In order to represent the neighborhood of a vertex, it is necessary to represent the the neighborhood in the generated document. We think this is the case if every combination of adjacent vertices is represented in the document multiple times.
 
-Generating all pair shortest paths of a graph guarantees to include all information of that graph.
+We thought about two ways to generate walks: All pair shortest paths and random walks. Each of the two methods has some advantages and disadvantages. All pair shortest paths have more hotspots of frequently visited graphs and therefore a bias in the document but produce similar walks for structurally similar graphs. Random walks can be of a specific length and don't have the same problem with frequently visited graphs but are not guaranteed to produce similar walks for structurally similar graphs.
 
-Random walks don't guarantee that, but offer other usefull options. If the random walks methods favours
-
-%A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge.
-%A random walk is a walk where the next vertex is chosen randomly from the set of vertices that are connected to the current vertex.
+TODO in order to prove the all the information for each graph is represented in document, try to generate a graph from a document.
