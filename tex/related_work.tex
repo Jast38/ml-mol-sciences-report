@@ -83,6 +83,15 @@ The second encoding, called spatial encoding, is used to capture positional info
 
 Finally Graphormer introduces a method to include edge information in the model by adding an additional bias term to the attention module. This bias is created by averaging the dot-products of edge features and a learnable scalar of the edges describing the shortest path between each two connected nodes. \todo{\tiny perhaps add equations according to Transformer and Graphormer paper}
 
+See \autoref{fig:model-graphormer}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.2]{tex/res/graphormer_fig.png}
+    \caption{Graphormer model architecture \tiny{source: \cite{2021graphormer}}}
+    \label{fig:model-graphormer}
+\end{figure}
+
 \subsubsection{GraphGPS}
 L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Powerful, Scalable Graph Transformer.'~\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.
 
