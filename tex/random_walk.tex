@@ -2,7 +2,7 @@
 
 One of the primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality.
 
-For our walk based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (node2vec TODO). The downstream task after the embedding of the graph is either regression or classification. For this we use sklearn.
+For our walk based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (see \cite{2016node2vec}). The downstream task after the embedding of the graph is either regression or classification. For this we use sklearn.
 
 \subsubsection{walks to vector}
 A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id), e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
@@ -39,7 +39,9 @@ A walk on graph is a unambiguously sequence of vertices and edges, where each ve
         \begin{minipage}{.5\linewidth}
             \centering
             (0, 3, 5) \\
+            $\Downarrow$ \\
             (0\_0 1\_2 2\_2) (0\_8 1\_3 2\_9) (0\_2 1\_1 2\_7) \\
+            $\Downarrow$ \\
             0\_0 1\_2 2\_2 0\_8 1\_3 2\_9 0\_2 1\_1 2\_7
         \end{minipage}
     \end{minipage}
@@ -81,16 +83,75 @@ After this overview, we can formalize this method. Given a set of graphs $G = \{
 
 Pseudocode for our first implementation of our graph embedding method is given in algorithm \ref{algorithm:basic_idea_walk_to_vector}. We identified two ways to influence the embedding in a meaningful way:
 \begin{enumerate}
-    \item 
-    change the way walks a generated (lin)
+    \item
+     change the way walks are generated
 
     \item
-    change the text embedding model
+     change the text embedding model
 \end{enumerate}
 
-\subsubsection{Generate the random walks}
-In order to represent the neighborhood of a vertex, it is necessary to represent the the neighborhood in the generated document. We think this is the case if every combination of adjacent vertices is represented in the document multiple times.
+\subsubsection{change the way walks are generated}
+To accurately depict the neighborhood of a vertex, it is essential to represent the neighborhood within the generated document. This can be achieved when every combination of adjacent vertices is represented in the document multiple times.
 
-We thought about two ways to generate walks: All pair shortest paths and random walks. Each of the two methods has some advantages and disadvantages. All pair shortest paths have more hotspots of frequently visited graphs and therefore a bias in the document but produce similar walks for structurally similar graphs. Random walks can be of a specific length and don't have the same problem with frequently visited graphs but are not guaranteed to produce similar walks for structurally similar graphs.
+We have considered two approaches for generating walks: All Pair Shortest Paths (APSP) and Random Walks. Each method possesses distinct advantages and drawbacks. APSP tends to have more hotspots of frequently visited graphs, which may introduce bias in the document; however, it generates similar walks for structurally analogous graphs. On the other hand, Random Walks can be set to a specific length and do not exhibit the same issue with frequently visited graphs. Nevertheless, they do not guarantee the generation of similar walks for structurally similar graphs.
 
-TODO in order to prove the all the information for each graph is represented in document, try to generate a graph from a document.
+One reason to consider using graph walks for analysis is that, given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree. These walks therefore provide insight into the graph's structure, capturing information about the relationships between vertices and the paths connecting them. By aggregating data from numerous walks, a comprehensive representation of the graph can be formed, enabling its reconstruction for further evaluation.
+
+\paragraph{Reconstructing a graph from walks}
+With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to Figure \ref{figure:random_walk_cant_differentiate}. It is evident that each potential walkover one two graphs can be accommodated within the other graph as well.
+
+\begin{figure}[h!]
+    \begin{minipage}{\linewidth}
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node (A) at (0,0) {0};
+                    \node (B) at (0,4) {0};
+                    \node (C) at (5,4) {0};
+                    \node (D) at (5,0) {0};
+                \end{scope}
+
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (A) edge node {} (D);
+                    \path [-] (C) edge node {} (B);
+                    \path [-] (C) edge node {} (D);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node (A) at (0,0) {0};
+                    \node (B) at (0,4) {0};
+                    \node (C) at (5,4) {0};
+                    \node (D) at (5,0) {0};
+                \end{scope}
+
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (A) edge node {} (D);
+                    \path [-] (C) edge node {} (D);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+    \end{minipage}
+    \caption[short]{Example of two graphs whose walks can not be be differentiated}
+    \label{figure:random_walk_cant_differentiate}
+\end{figure}
+
+Similar, it os
+
+data
+
+ogbg-molfreesolv
+all pair shortest path:6.528969941013406
+[6.609125555671113, 6.57278283862703, 6.456680877236287, 6.539184198294062, 6.593562123437148, 6.417587074655182, 6.570877169599866, 6.478911030725958, 6.496761022461019, 6.5542275194263935]
+
+\subsubsection{change the text embedding model}
