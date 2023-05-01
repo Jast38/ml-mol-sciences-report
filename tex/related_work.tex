@@ -54,6 +54,8 @@ We decided to use OGB as a benchmarking framework instead of the MoleculeNet ben
 \subsection{Graph Embedding}
 TODO: Add information on graph embedding relevant to problem domain
 
+\subsection{node2vec}
+TODO: Add information about node2vec
 \subsubsection{doc2vec}
 TODO: explain doc2vec according to \cite{2014doc2vec} approach with respect to problem domain, possibly move to another section (paragraph/word embedding)
 
@@ -65,32 +67,109 @@ TODO: add Transformer~\cite{vaswani2017attention} section: add explanation, form
 
 In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. The general model structure, which was used to describe the idea, can be seen in \autoref{fig:model-arch}.
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.6]{paper_sources/attention_is_all_you_need/Figures/ModalNet-21}
-    \caption{The Transformer - model architecture, \tiny{source: \cite{vaswani2017attention}}}
-    \label{fig:model-arch}
-\end{figure}
-
+Transformers use Self-Attention to increase model performance.
 \subsubsection{Graphormer}
 As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks.
 
 Graphormer achieves such good results by introducing three types of encodings to incorporate structural information of graphs in the feature vectors of nodes and edges.
 
-To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing two new vectors for each node, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are learnable scalars which are added to the node features, so node importance and semantic correlation are respected during self attention. \todo{\tiny add more information about learnable scalars, add general transforer structure to explain queries and keys}
+To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing two new vectors for each node, one for the degree of ingoing edges and one for the outgoing ones \autoref{fig:graphormer_centr_enc}. Those vectors are learnable scalars which are added to the node features, so node importance and semantic correlation are respected during self attention. \todo{\tiny add more information about learnable scalars, add general transforer structure to explain queries and keys}
 
 The second encoding, called spatial encoding, is used to capture positional information for each node with respect to the network. This is achieved by using the distance of the shortest path between connected nodes and, once again, using a learnable scalar which is added as bias in the self-attention module. By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
 
 Finally Graphormer introduces a method to include edge information in the model by adding an additional bias term to the attention module. This bias is created by averaging the dot-products of edge features and a learnable scalar of the edges describing the shortest path between each two connected nodes. \todo{\tiny perhaps add equations according to Transformer and Graphormer paper}
 
-See \autoref{fig:model-graphormer}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{tex/res/graphormer_centr_enc.png}
+    \caption{Centrality Encoding: learnable embedding vectors are added to feature vectors of nodes}
+    \label{fig:graphormer_centr_enc}
+\end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.2]{tex/res/graphormer_fig.png}
-    \caption{Graphormer model architecture \tiny{source: \cite{2021graphormer}}}
-    \label{fig:model-graphormer}
+    \includegraphics[scale=0.4]{tex/res/graphormer_attention.png}
+    \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
+    \label{fig:graphormer_att}
 \end{figure}
+
+
+% \begin{figure}[ht]
+%     \centering
+%     \begin{tikzpicture}[baseline=(current bounding box.center)]
+%         \matrix (m) [matrix of math nodes, row sep=-\pgflinewidth, column sep=-\pgflinewidth, nodes={minimum width=7mm, minimum height=7mm, draw}] {
+%         a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} & a_{1,5} & a_{1,6} \\
+%         a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4} & a_{2,5} & a_{2,6} \\
+%         a_{3,1} & a_{3,2} & a_{3,3} & a_{3,4} & a_{3,5} & a_{3,6} \\
+%         a_{4,1} & a_{4,2} & a_{4,3} & a_{4,4} & a_{4,5} & a_{4,6} \\
+%         a_{5,1} & a_{5,2} & a_{5,3} & a_{5,4} & a_{5,5} & a_{5,6} \\
+%         a_{6,1} & a_{6,2} & a_{6,3} & a_{6,4} & a_{6,5} & a_{6,6} \\
+%         };
+%         \draw[] (m-1-1.north west) rectangle (m-3-3.south east);
+%         \draw[] (m-1-4.north west) rectangle (m-3-6.south east);
+%         \draw[] (m-4-1.north west) rectangle (m-6-3.south east);
+%         \draw[] (m-4-4.north west) rectangle (m-6-6.south east);
+%     \end{tikzpicture}
+%     \caption{Illustration of a 6x6 matrix}
+%     \label{fig:matrix_1}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \begin{tikzpicture}[scale=0.8]
+%         % nodes
+%         \foreach \i in {1,...,6}
+%         \node[circle, draw=black, fill=white, inner sep=0pt, minimum size=0.5cm] (n\i) at (\i,1) {$v_\i$};
+        
+%         % centrality embeddings
+%         \foreach \i in {1,...,6}
+%         \node[circle, draw=black, fill=black!20, inner sep=0pt, minimum size=0.5cm] (c\i) at (\i,-1.5) {};
+        
+%         % edges
+%         \draw[-,>=stealth, thick] (n1) -- (n2);
+%         \draw[-,>=stealth, thick] (n1) -- (n3);
+%         \draw[-,>=stealth, thick] (n2) -- (n4);
+%         \draw[-,>=stealth, thick] (n2) -- (n5);
+%         \draw[-,>=stealth, thick] (n3) -- (n6);
+        
+%         % centrality connections
+%         \draw[-,>=stealth, thick] (n1) -- (c1);
+%         \draw[-,>=stealth, thick] (n2) -- (c2);
+%         \draw[-,>=stealth, thick] (n3) -- (c3);
+%         \draw[-,>=stealth, thick] (n4) -- (c4);
+%         \draw[-,>=stealth, thick] (n5) -- (c5);
+%         \draw[-,>=stealth, thick] (n6) -- (c6);
+        
+%     \end{tikzpicture}
+% \end{figure}
+% \begin{figure}[ht]
+%     \centering
+%     \begin{tikzpicture}[node distance=2cm]
+%         \node[atom] (A) {A};
+%         \node[atom, right=of A] (B) {B};
+%         \node[atom, below=of A] (C) {C};
+%         \node[atom, below=of B] (D) {D};
+        
+%         \draw[arrowstyle] (A) -- (B);
+%         \draw[arrowstyle] (A) -- (C);
+%         \draw[arrowstyle] (B) -- (D);
+%         \draw[arrowstyle] (C) -- (D);
+        
+%         \node[matrix, right=4cm of B] (M1) {$M_1$};
+%         \node[matrix, below=of M1] (M2) {$M_2$};
+%         \node[matrix, right=of M1] (M3) {$M_3$};
+        
+%         \node[label, above=0.5cm of M1] {Embeddings};
+%         \node[label, right=0.5cm of M2] {Adjacency Matrix};
+        
+%         \draw[->] (B) edge[out=0, in=180] (M1.west);
+%         \draw[->] (B) edge[out=0, in=180] (M2.west);
+%         \draw[->] (C) edge[out=0, in=180] (M3.west);
+        
+%     \end{tikzpicture}
+%     \caption{Visualization of Graphormer with molecule graphs according to the Open Graph Benchmark (OGB) and matrix representations of embeddings.}
+%     \label{fig:graphormer_vis}
+    
+% \end{figure}
 
 \subsubsection{GraphGPS}
 L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Powerful, Scalable Graph Transformer.'~\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.

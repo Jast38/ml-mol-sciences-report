@@ -23,4 +23,13 @@
 \setlength{\algomargin}{1.5em}
 
 \usepackage{tikz}
+\usetikzlibrary{positioning,fit,matrix,shapes.geometric, calc}
+\usetikzlibrary{positioning,shapes,arrows.meta,decorations.markings}
+
+\tikzset{
+  atom/.style = {circle, draw, thick, minimum size=1cm},
+  arrowstyle/.style = {decorate, decoration={markings,mark=at position 1 with {\arrow[scale=1.5,>=stealth]{>}}}},
+  matrix/.style = {rectangle, draw, thick, minimum size=2cm},
+  label/.style = {font=\small},
+}
 \usetikzlibrary{arrows.meta}
