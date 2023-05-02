@@ -4,6 +4,14 @@
 
 \usepackage[preprint, nonatbib]{neurips_2020} % possible options are 'preprint' OR 'final'
 \usepackage{packages}
+
+\input{paper_sources/graphormer/math_commands}
+\newcommand{\attn}[1]{\mathrm{Attn}\rbr{#1}}
+\newcommand{\softmax}[1]{\mathrm{softmax}\rbr{#1}}
+\newcommand{\aggr}[1]{\mathrm{AGGREGATE}\rbr{#1}}
+\newcommand{\comb}[1]{\mathrm{COMBINE}\rbr{#1}}
+\newcommand{\ffn}[1]{\mathrm{FFN}\rbr{#1}}
+
 \addbibresource{refs.bib}  % add bibliography file
 
 \title{Bachelor Research Project: Graph Machine Learning}
