@@ -7,7 +7,7 @@ For our walk based embedding we focused on the embedding of whole graphs, as a s
 \subsubsection{walks to vector}
 A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id), e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \begin{minipage}{\linewidth}
         \begin{minipage}{.5\linewidth}
             \centering
@@ -100,7 +100,7 @@ One reason to consider using graph walks for analysis is that, given a sufficien
 \paragraph{Reconstructing a graph from walks}
 With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to Figure \ref{figure:random_walk_cant_differentiate}. It is evident that each potential walk over one two graphs can be accommodated within the other graph as well.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \begin{minipage}{\linewidth}
         \begin{minipage}{.5\linewidth}
             \centering
