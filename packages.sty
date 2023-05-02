@@ -21,6 +21,22 @@
 %\SetKwFor{ForAll}{für alle}{}{}
 %\SetKwFor{For}{für}{}{}
 \setlength{\algomargin}{1.5em}
+\usepackage{listings}
+\lstdefinestyle{cpp}{
+  language=C++,
+  basicstyle=\small\ttfamily,
+  frame=tb,
+  xleftmargin=\parindent,
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  commentstyle=\color{green},
+  morecomment=[l][\color{magenta}]{\#},
+  framexleftmargin=5pt,
+  framexrightmargin=5pt,
+  framextopmargin=5pt,
+  framexbottommargin=5pt,
+  literate={~}{$\sim$}1
+}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,matrix,shapes.geometric, calc}
