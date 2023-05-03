@@ -56,7 +56,7 @@ Graph embedding is a technique in graph machine learning that maps nodes and edg
 
 The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
 
-There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec, 2016node2vec,2021graphormer}.
+There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
 
 \subsubsection{doc2vec}
 Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2vec builds the base for many ideas regarding graph embedding.
@@ -135,14 +135,14 @@ Finally Graphormer introduces a method to include edge information in the model 
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.4]{tex/res/graphormer_centr_enc.png}
+    \includegraphics[scale=0.35]{tex/res/graphormer_centr_enc.png}
     \caption{Centrality Encoding: learnable embedding vectors are added to feature vectors of nodes}
     \label{fig:graphormer_centr_enc}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.4]{tex/res/graphormer_attention.png}
+    \includegraphics[scale=0.35]{tex/res/graphormer_attention.png}
     \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
     \label{fig:graphormer_att}
 \end{figure}
@@ -153,6 +153,13 @@ L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Po
 GraphGPS serves as a preprocessor for the actual model learning on the dataset. The authors tested GraphGPS with several models, such as Transformer, Performer, BigBird, Gine, and more. They designed it to allow models that permit only Node Features, known as the Global Attention layer, as well as models that permit both Node and Edge Features, known as the MPNN layer. Both layers can also be used in combination to integrate the distinct advantages of two models.
 
 The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.13]{tex/res/gps_abstract.png}
+    \caption{General overlook of GraphGPS taken from~\cite{2023graphgps}}
+    \label{fig:gps-abstract}
+\end{figure}
 
 \subsubsection{Heterogeneous Interpolation on Graphs}
 A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cite{tencenc2021Hig,tencenc2021HigPaper} was submitted to the OGB leaderboard in 2021 by Wang et al., providing an implementation and a brief technical report describing the research. By using their method combined with Graphormer, they were able to achieve better average precision than all previous submissions.
