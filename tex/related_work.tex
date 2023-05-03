@@ -52,7 +52,24 @@ We decided to use OGB as a benchmarking framework instead of the MoleculeNet ben
 
 
 \subsection{Graph Embedding}
-TODO: Add information on graph embedding relevant to problem domain
+Graph embedding is a technique in graph machine learning that maps nodes and edges of a graph into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems, and molecular sciences.
+
+The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
+
+There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec, 2016node2vec ,2021graphormer}.
+
+\subsubsection{doc2vec}
+Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2vec builds the base for many ideas regarding graph embedding.
+
+Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW). 
+
+In the Distributed Memory model, the document vector is trained to predict the next word in a randomly sampled sequence of words, with the document vector and a window of surrounding words as input. The document vector is then updated alongside the word vectors during backpropagation. This model captures the overall topic and meaning of the document, as it has access to all words in the document.
+
+In contrast, the Distributed Bag of Words model disregards the order of words and only utilizes the occurrence information of the words in the document. The input to the model is a bag of words from a randomly sampled window, and the objective is to predict the words in the window. The document vector is trained alongside the word vectors, and it aims to represent the document's overall semantic content.
+
+In both models, the document vector is learned by optimizing a loss function, typically the negative log-likelihood of predicting the target words. The resulting document vectors are continuous, dense, and low-dimensional, making them suitable for various downstream tasks, such as document classification, clustering, and information retrieval.
+
+Doc2vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. The embeddings capture the semantics and meaning of the documents and can be used to infer similarities between documents, making them useful for document clustering and information retrieval.
 
 \subsection{node2vec}
 
@@ -65,19 +82,6 @@ To generate random walks, node2vec uses a biased random walk strategy that balan
 Once the random walks are generated, node2vec uses the skip-gram model to learn node embeddings by maximizing the likelihood of predicting the context nodes given the current node. The skip-gram model is trained using negative sampling, which samples negative nodes that are not in the context set and adjusts the embedding vectors to minimize the difference between the predicted and actual context sets.
 
 Node2vec has several advantages over previous methods for network embedding. While being scalable to large networks and being able to handle heterogeneous networks with multiple types of nodes and edges, it can also capture both the local and global structure of the network by tuning the $p$ and $q$ parameters. Additionally, it can handle noisy or incomplete networks by incorporating information from the context nodes. Finally, it can be applied to a wide range of downstream tasks, such as link prediction, node classification, and community detection.
-
-\subsubsection{doc2vec}
-Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents.
-
-Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW). 
-
-In the Distributed Memory model, the document vector is trained to predict the next word in a randomly sampled sequence of words, with the document vector and a window of surrounding words as input. The document vector is then updated alongside the word vectors during backpropagation. This model captures the overall topic and meaning of the document, as it has access to all words in the document.
-
-In contrast, the Distributed Bag of Words model disregards the order of words and only utilizes the occurrence information of the words in the document. The input to the model is a bag of words from a randomly sampled window, and the objective is to predict the words in the window. The document vector is trained alongside the word vectors, and it aims to represent the document's overall semantic content.
-
-In both models, the document vector is learned by optimizing a loss function, typically the negative log-likelihood of predicting the target words. The resulting document vectors are continuous, dense, and low-dimensional, making them suitable for various downstream tasks, such as document classification, clustering, and information retrieval.
-
-Doc2vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. The embeddings capture the semantics and meaning of the documents and can be used to infer similarities between documents, making them useful for document clustering and information retrieval.
 
 \subsubsection{graph2vec}
 Graph2vec is a method proposed by Narayanan et al.~\cite{2017graph2vec} for learning distributed representations of graphs. This approach builds on top of the previously described word2vec and Doc2vec methods, but instead of learning representations for words or paragraphs, it learns representations for graphs.
@@ -104,7 +108,7 @@ In 2017 Vaswani et al. proposed a new network architecture for NLP problems, cal
     A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V,\label{eqn:attention-alpha2}
 \end{align}
 
-Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. This leads to \autoref{eqn:attention-matrix}
+Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model. $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
 
 \subsubsection{Graphormer}
 As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks, particularly for complex structures.
@@ -123,7 +127,7 @@ The bias $b_{\Phi (v_i, v_j)}$ is produced by the so called spatial encoding, wh
 
 By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
 
-Finally Graphormer introduces a method to include edge information in the model by adding an the additional bias term $c_{ij}$ to the attention module. This bias is created by averaging the dot-products of edge features ($x_{e_n}$) and a learnable scalar ($(w_n^E)^T$), which is indexed according to the distance of the edge to the start node dor each edge along the shortest path between each two connected nodes.
+Finally Graphormer introduces a method to include edge information in the model by adding an the additional bias term $c_{ij}$ to the attention module. This bias is created by averaging the dot-products of edge features ($x_{e_n}$) and a learnable scalar ($(w_n^E)^T$), which is indexed according to the distance of the edge to the start node for each edge along the shortest path between each two connected nodes.
 
 \begin{equation}
     c_{ij} = \frac{1}{N} \sum_{n=1}^{N} x_{e_n}(w_n^E)^T
