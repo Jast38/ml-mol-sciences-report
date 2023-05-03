@@ -9,29 +9,45 @@ GraphGPS is by design a highly malleable model, which allows for easy additions 
 \end{figure}
 
 \subsubsection{Implementation}
+\begin{minipage}{\linewidth}
+    \begin{algorithm}[H]
+        %\SetKwSty{text}
+        \DontPrintSemicolon
+        \SetArgSty{text}
+        \SetProgSty{text}
+        \SetKw{KwIn}{in}
+        \SetKw{KwAnd}{and}
 
-\begin{lstlisting}[style=cpp,caption={HiG-Code in GraphGPS},label={lst:Void},numbers=left]
-if 'HIG' in pe_types:
-    interpolation_chance = cfg.posenc_HIG.loss
-    is_interpolating = np.random.choice(2, 1, p=[1-interpolation_chance,interpolation_chance])[0]
-    minimum_node_size = cfg.posenc_HIG.minimum_node_size
-    nodes_interpolated = cfg.posenc_HIG.nodes_interpolated
-    minimum_node_size = max(minimum_node_size, nodes_interpolated)
-    if data.num_nodes > minimum_node_size and is_interpolating == 1:
-        rand_ints = np.random.choice(data.num_nodes, nodes_interpolated, 
-	    replace=False)
-        sum = {}
-        for rand_int in rand_ints:
-            data.x[rand_int] = 0
-            sum[rand_int] = 0
-        for i in data.edge_index[0]:
-            if i in rand_ints:
-                relevant_node = data.edge_index[1][i]
-                data.x[i] = torch.add(data.x[i], data.x[relevant_node])
-                sum[i] += 1
-        for rand_int in rand_ints:
-            data.x[rand_int] = data.x[rand_int] / sum[rand_int]
-\end{lstlisting}
+        \SetKwProg{Fn}{def}{}{}
+        \If{'HiG' in pe\_types}{
+            interpolation\_chance = cfg.posenc\_HIG.loss\;
+                is\_interpolating = np.random.choice(2, 1, p=[1-interpolation\_chance, interpolation\_chance])[0]\; 
+                minimum\_node\_size = cfg.posenc\_HIG.minimum\_node\_size\;
+                nodes\_interpolated = cfg.posenc\_HIG.nodes\_interpolated\;
+                minimum\_node\_size = max(minimum\_node\_size, nodes\_interpolated)\;
+            \If{data.num\_nodes > minimum\_node\_size \KwAnd is\_interpolating == 1}{
+                rand\_ints = np.random.choice(data.num\_nodes, nodes\_interpolated\;
+                sum = \{\}\;
+                \For{rand\_int \KwIn rand\_ints}{
+                data.x[rand\_int] = 0\;
+                sum[rand\_int] = 0\;
+            }
+                \For{i \KwIn data.edge\_index[0]}{
+                    \If{i \KwIn rand\_ints}{
+                    relevant\_node = data.edge\_index[1][i]\;
+                    data.x[i] = torch.add(data.x[i], data.x[relevant\_node])\;
+                    sum[i] += 1\;
+                    }
+                }
+                \For{rand\_int \KwIn rand\_ints}{
+                data.x[rand\_int] = data.x[rand\_int] / sum[rand\_int]
+            }
+            }
+        }
+        \caption{HiG-Code in GraphGPS}
+        \label{algorithm:HiG_Code_in_GraphGPS}
+    \end{algorithm}
+\end{minipage}
 
 \subsubsection{Results}
 
