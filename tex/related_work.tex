@@ -117,6 +117,13 @@ Graphormer achieves such good results by introducing three types of encodings as
 
 To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing learnable embedding vectors, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are scalars which are added to the features of each node, so node importance and semantic correlation are respected during self attention. Those scalars are indexed from two vectors according to the respective degrees as seen in \autoref{fig:graphormer_centr_enc}.
 
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[scale=0.35]{tex/res/graphormer_centr_enc.png}
+    \caption{Centrality Encoding: learnable embedding vectors are added to feature vectors of nodes}
+    \label{fig:graphormer_centr_enc}
+\end{figure}
+
 The other two encodings are added as bias to the Attention Module used in Transformers as described in \autoref{fig:graphormer_att} and the following equation.
 \begin{equation}
     A_{ij} = \frac{(h_i W_Q)(h_j W_K)^T}{\sqrt{d}} + b_{\Phi (v_i, v_j)} + c_{ij}
@@ -133,14 +140,7 @@ Finally Graphormer introduces a method to include edge information in the model 
     c_{ij} = \frac{1}{N} \sum_{n=1}^{N} x_{e_n}(w_n^E)^T
 \end{equation}
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.35]{tex/res/graphormer_centr_enc.png}
-    \caption{Centrality Encoding: learnable embedding vectors are added to feature vectors of nodes}
-    \label{fig:graphormer_centr_enc}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.35]{tex/res/graphormer_attention.png}
     \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
@@ -154,7 +154,7 @@ GraphGPS serves as a preprocessor for the actual model learning on the dataset. 
 
 The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
 
-\begin{figure}[ht]
+\begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.13]{tex/res/gps_abstract.png}
     \caption{General overlook of GraphGPS taken from~\cite{2023graphgps}}
@@ -167,7 +167,7 @@ A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cit
 The report introduces heterogeneous interpolation, which is done by dropping the feature vectors of several randomly selected nodes and replacing them by the interpolated feature mix of all neighboring nodes.
 By using a mixing ratio, the influence of each neighbors features can be adapted. To account for possible information loss, KL-Divergence constraint loss is added. By doing that, the distributions of two identical graphs remain similar after interpolating some feature vectors. The general idea was visualized by Wang et al. in \autoref{fig:hig_figure}.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.3]{tex/res/hig_figure.png}
     \caption{Visualization of HIG-GraphClassification by Wang et al., \tiny{source: \cite{tencenc2021HigPaper}}}
