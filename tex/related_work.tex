@@ -46,7 +46,7 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
 \end{table}
 
 
-We additionally used ogb-molfreesolv as a smaller dataset which is also derived from MoleculeNet. FreeSolv contains SMILES strings of molecules from the Free Solvation Database and consists of "experimental and calculated hydration free energy of small molecules in water" \todo{\tiny add citation see moleculeNet paper}. The model is evaluated using Root Mean Square Error.
+We additionally used ogb-molfreesolv as a smaller dataset which is also derived from MoleculeNet. FreeSolv contains SMILES strings of molecules from the Free Solvation Database and consists of "experimental and calculated hydration free energy of small molecules in water"~\cite{2018moleculenet}. The model is evaluated using Root Mean Square Error.
 
 We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018.
 
@@ -55,12 +55,35 @@ We decided to use OGB as a benchmarking framework instead of the MoleculeNet ben
 TODO: Add information on graph embedding relevant to problem domain
 
 \subsection{node2vec}
-TODO: Add information about node2vec
+\todo{\tiny 28.32\% AI GPT}
+
+Node2Vec, presented by Grover and Leskovec in 2016, is a framework for learning low-dimensional representations of nodes in large-scale networks~\cite{2016node2vec}. The goal of node2vec is to learn embeddings that capture the structural information of nodes, such as their connectivity patterns, in a way that is useful for downstream tasks, such as node classification, clustering, and link prediction.
+
+Node2vec builds on the skip-gram model used in natural language processing, which learns word embeddings by predicting the context of a given word. Similarly, node2vec learns node embeddings by training a neural network to predict the context of a given node, where the context of a node is defined as the set of nodes that are likely to appear in random walks starting from that node.
+
+To generate random walks, node2vec uses a biased random walk strategy that balances the trade-off between exploring the network and exploiting the local neighborhood of a node. The random walk starts at a given node choosing for each step to either revisit the previous node or move to the next one based on two parameters: the in-out degree bias parameter $p$ and the return parameter $q$, where $p$ controls the likelihood of staying in the same community, while $q$ controls the likelihood of visiting a node that is far away from the current one. By tuning these parameters, node2vec can generate different types of random walks that capture different types of structural information in the network.
+
+Once the random walks are generated, node2vec uses the skip-gram model to learn node embeddings by maximizing the likelihood of predicting the context nodes given the current node. The skip-gram model is trained using negative sampling, which samples negative nodes that are not in the context set and adjusts the embedding vectors to minimize the difference between the predicted and actual context sets.
+
+Node2vec has several advantages over previous methods for network embedding. While being scalable to large networks and being able to handle heterogeneous networks with multiple types of nodes and edges, it can also capture both the local and global structure of the network by tuning the $p$ and $q$ parameters. Additionally, it can handle noisy or incomplete networks by incorporating information from the context nodes. Finally, it can be applied to a wide range of downstream tasks, such as link prediction, node classification, and community detection.
+
 \subsubsection{doc2vec}
-TODO: explain doc2vec according to \cite{2014doc2vec} approach with respect to problem domain, possibly move to another section (paragraph/word embedding)
+Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents.
+
+Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW). 
+
+In the Distributed Memory model, the document vector is trained to predict the next word in a randomly sampled sequence of words, with the document vector and a window of surrounding words as input. The document vector is then updated alongside the word vectors during backpropagation. This model captures the overall topic and meaning of the document, as it has access to all words in the document.
+
+In contrast, the Distributed Bag of Words model disregards the order of words and only utilizes the occurrence information of the words in the document. The input to the model is a bag of words from a randomly sampled window, and the objective is to predict the words in the window. The document vector is trained alongside the word vectors, and it aims to represent the document's overall semantic content.
+
+In both models, the document vector is learned by optimizing a loss function, typically the negative log-likelihood of predicting the target words. The resulting document vectors are continuous, dense, and low-dimensional, making them suitable for various downstream tasks, such as document classification, clustering, and information retrieval.
+
+Doc2vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. The embeddings capture the semantics and meaning of the documents and can be used to infer similarities between documents, making them useful for document clustering and information retrieval.
 
 \subsubsection{graph2vec}
 TODO: explain graph2vec \cite{2017graph2vec} approach with respect to problem domain
+
+Graph2Vec will be used by us as a benchmark.
 
 \subsection{Transformers}
 TODO: add Transformer~\cite{vaswani2017attention} section: add explanation, formulas, visualization
@@ -75,13 +98,13 @@ In 2017 Vaswani et al. proposed a new network architecture for NLP problems, cal
 Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. This leads to \autoref{eqn:attention-matrix}
 
 \subsubsection{Graphormer}
-As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks.
+As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks, particularly for complex structures.
 
-Graphormer achieves such good results by introducing three types of encodings to incorporate structural information of graphs in the feature vectors of nodes and edges.
+Graphormer achieves such good results by introducing three types of encodings as a bias to the self-attention mechanism used in Transformer architecture. While Transformer models work by computing weighted sum of input features based on attention scores between different tokens during self-attention, Graphormer incorporates structural information of different nodes in pairwise relation to each other into the self-attention mechanism, thus increasing the information encapsuled in the self-attention module, which is held by graph structures and features present.
 
 To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing learnable embedding vectors, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are scalars which are added to the features of each node, so node importance and semantic correlation are respected during self attention. Those scalars are indexed from two vectors according to the respective degrees as seen in \autoref{fig:graphormer_centr_enc}.
 
-The other two encodings are added as bias to the Attention Module used in Transformers as seen in \autoref{fig:graphormer_att} and the following equation.
+The other two encodings are added as bias to the Attention Module used in Transformers as described in \autoref{fig:graphormer_att} and the following equation.
 \begin{equation}
     A_{ij} = \frac{(h_i W_Q)(h_j W_K)^T}{\sqrt{d}} + b_{\Phi (v_i, v_j)} + c_{ij}
     \label{eqn:attention-matrix}
