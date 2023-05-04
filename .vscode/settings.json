@@ -1,10 +1,12 @@
 {
     "cSpell.words": [
+        "APSP",
         "backpropagation",
         "Chirality",
         "Dwivedi",
         "featurizers",
         "Graphormer",
+        "hotspots",
         "leaderboard",
         "Lukas",
         "molfreesolv",
@@ -12,7 +14,9 @@
         "molpcba",
         "Narayanan",
         "Neur",
+        "Pseudocode",
         "Rampásek",
+        "softmax",
         "Staib",
         "Vaswani",
         "Ying",
