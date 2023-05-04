@@ -10,7 +10,7 @@ GraphGPS is by design a highly malleable model, which allows for easy additions 
 
 \subsubsection{Implementation}
 
-The implementation of the heterogeneous interpolation, which involves dropping the feature vector of several randomly selected nodes and replacing them with an interpolated feature mix, can be found in algorithm \ref{algorithm:HiG_Code_in_GraphGPS}. While our implementation does not include the mixing ratio, we have added a loss parameter and a min\_size parameter. The loss parameter enables us to specify the probability with which the graph replaces a node with an interpolated feature mix. On the other hand, the min\_size parameter sets a minimum size for the graph. This is because a smaller graph tends to lose more information if a node is replaced, which could be disadvantageous. Additionally, we have included the nodes\_interpolated parameter, which allows us to specify the number of nodes that get dropped instead of randomly choosing how many get dropped.
+The implementation of the heterogeneous interpolation, which involves dropping the feature vector of several randomly selected nodes and replacing them with an interpolated feature mix, can be found in algorithm \ref{algorithm:HiG_Code_in_GraphGPS}. While our implementation does not include the mixing ratio, we have added a Interpolation-p parameter and a min\_size parameter. The Interpolation-p parameter enables us to specify the probability with which the graph replaces a node with an interpolated feature mix. On the other hand, the min\_size parameter sets a minimum size for the graph. This is because a smaller graph tends to lose more information if a node is replaced, which could be disadvantageous. Additionally, we have included the nodes\_interpolated parameter, which allows us to specify the number of nodes that get dropped instead of randomly choosing how many get dropped.
 
 \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
@@ -23,7 +23,7 @@ The implementation of the heterogeneous interpolation, which involves dropping t
 
         \SetKwProg{Fn}{def}{}{}
         \If{'HiG' in pe\_types}{
-            interpolation\_chance = cfg.posenc\_HIG.loss\;
+            interpolation\_chance = cfg.posenc\_HIG.Interpolation-p\;
                 is\_interpolating = np.random.choice(2, 1, p=[1-interpolation\_chance, interpolation\_chance])[0]\; 
                 minimum\_node\_size = cfg.posenc\_HIG.minimum\_node\_size\;
                 nodes\_interpolated = cfg.posenc\_HIG.nodes\_interpolated\;
@@ -58,7 +58,7 @@ In table \ref{hig_results} are the results of implementing HIG in GraphGPS. The 
     \centering
     \caption{Results for different HIG Parameters}
     \label{hig_results}
-    \begin{tabular}{c || l|l|l| p{6cm} |}
+    \begin{tabular}{c || l|l|l|l|}
         Model Focus            & Interpolation-p & Nodes Interpolated & min.graph size & Test-AUC \\
         \hline
         \hline
@@ -86,4 +86,5 @@ In table \ref{hig_results} are the results of implementing HIG in GraphGPS. The 
         HIG + LapPE   & 0.75& 1& 20                & 0.78412  \\
     \end{tabular}
 \end{table}
+
 
