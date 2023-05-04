@@ -52,21 +52,21 @@ The implementation of the heterogeneous interpolation, which involves dropping t
     \end{algorithm}
 \end{minipage}
 
-\subsubsection{Results}
-
+\subsubsection{Results on ogbg-molhiv}
+In table \ref{hig_results} are the results of implementing HIG in GraphGPS. The lowest performance is when 5 nodes are replaced by an interpolation. GraphGPS with HIG performs best when combined with LapPE\cite{2023graphgps}. Without other Encodings the Parameter combination of 0.75 Interpolation-p, 1 Node Interpolated and 20 minimum graph Size performs best.
 \begin{table}[ht!]
     \centering
     \caption{Results for different HIG Parameters}
-    \label{node_features}
+    \label{hig_results}
     \begin{tabular}{c || l|l|l| p{6cm} |}
-        Model Focus            & Loss & Nodes Interpolated & min.graph size & Test-AUC \\
+        Model Focus            & Interpolation-p & Nodes Interpolated & min.graph size & Test-AUC \\
         \hline
         \hline
         No HIG    &     &    &               &  0.7710  \\
         \hline
         Standard HIG      &  1.0& 1& 5            & 0.75274  \\
         \hline
-        Loss               & 0.5& 1& 5                    & 0.77894  \\
+        Interpolation-p               & 0.5& 1& 5                    & 0.77894  \\
                            & 0.1& 1& 5                    & 0.77033  \\
                            & 0.01& 1& 5                   & 0.7625   \\
         \hline
