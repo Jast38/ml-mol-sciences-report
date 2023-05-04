@@ -50,18 +50,10 @@ We additionally used ogb-molfreesolv as a smaller dataset which is also derived 
 
 We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018.
 
-
-\subsection{Graph Embedding}
-Graph embedding is a technique in graph machine learning that maps nodes and edges of a graph into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems, and molecular sciences.
-
-The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
-
-There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
-
 \subsubsection{doc2vec}
 Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2vec builds the base for many ideas regarding graph embedding.
 
-Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW). 
+Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW).
 
 In the Distributed Memory model, the document vector is trained to predict the next word in a randomly sampled sequence of words, with the document vector and a window of surrounding words as input. The document vector is then updated alongside the word vectors during backpropagation. This model captures the overall topic and meaning of the document, as it has access to all words in the document.
 
@@ -69,7 +61,14 @@ In contrast, the Distributed Bag of Words model disregards the order of words an
 
 In both models, the document vector is learned by optimizing a loss function, typically the negative log-likelihood of predicting the target words. The resulting document vectors are continuous, dense, and low-dimensional, making them suitable for various downstream tasks, such as document classification, clustering, and information retrieval.
 
-Doc2vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. The embeddings capture the semantics and meaning of the documents and can be used to infer similarities between documents, making them useful for document clustering and information retrieval.
+Doc2vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. This idea of capturing the semantics and meaning of the documents was the basis for many future implementations and also layed the path for good algorithms regarding graph embedding.
+
+\subsection{Graph Embedding}
+Graph embedding is a technique in graph machine learning that maps nodes and edges of a graph into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems, and molecular sciences.
+
+The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
+
+There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
 
 \subsection{node2vec}
 
@@ -99,12 +98,10 @@ Graph2vec uses a negative sampling technique that is similar to the one used in 
 The resulting embeddings capture the structural properties of the graphs, allowing them to be used for various downstream tasks. In our case, we will mainly use Graph2vec as a benchmark and reference point.
 
 \subsection{Transformers}
-TODO: add Transformer~\cite{vaswani2017attention} section: add explanation, formulas, visualization
-
 In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. The Transformer architecture is build of many layers, each containing a self-attention module and a position-wise feed-forward network. Self-attention is then calculated as described in~\cite{2021graphormer}:
 
 \begin{align}
-    Q = HW_Q,\quad K = HW_K,\quad V = HW_V,\label{eqn:attention-alpha}\\
+    Q = HW_Q,\quad K = HW_K,\quad V = HW_V,\label{eqn:attention-alpha} \\
     A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V,\label{eqn:attention-alpha2}
 \end{align}
 
@@ -130,7 +127,7 @@ The other two encodings are added as bias to the Attention Module used in Transf
     \label{eqn:attention-matrix}
 \end{equation}
 
-The bias $b_{\Phi (v_i, v_j)}$ is produced by the so called spatial encoding, which captures positional information for each node with respect to the network. This is achieved by using the distance of the shortest path between two connected nodes, described by the function $\Phi$, combined with a learnable vector which is indexed according to $\Phi$. The resulting scalar is added as bias in the self-attention module. 
+The bias $b_{\Phi (v_i, v_j)}$ is produced by the so called spatial encoding, which captures positional information for each node with respect to the network. This is achieved by using the distance of the shortest path between two connected nodes, described by the function $\Phi$, combined with a learnable vector which is indexed according to $\Phi$. The resulting scalar is added as bias in the self-attention module.
 
 By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
 
