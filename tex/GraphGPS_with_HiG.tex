@@ -58,23 +58,32 @@ The implementation of the heterogeneous interpolation, which involves dropping t
     \centering
     \caption{Results for different HIG Parameters}
     \label{node_features}
-    \begin{tabular}{c || l| p{6cm} |}
-        Parameter            & Parameter Values & Test-AUC \\
+    \begin{tabular}{c || l|l|l| p{6cm} |}
+        Model Focus            & Loss & Nodes Interpolated & min.graph size & Test-AUC \\
         \hline
         \hline
-        Standard HIG (1.0 for every Parameter)      &                        & 0.75274  \\
+        No HIG    &     &    &               &  0.7710  \\
         \hline
-        Loss               & 0.5                    & 0.77894  \\
-        (5 min. graph size)                   & 0.1                    & 0.77033  \\
-                           & 0.01                   & 0.7625   \\
+        Standard HIG      &  1.0& 1& 5            & 0.75274  \\
         \hline
-        Nodes Interpolated & 2                      & 0.73967  \\
-    (5 min. graph size)             & 3                      & 0.73882  \\
-                                   & 5                      & 0.71498  \\
+        Loss               & 0.5& 1& 5                    & 0.77894  \\
+                           & 0.1& 1& 5                    & 0.77033  \\
+                           & 0.01& 1& 5                   & 0.7625   \\
         \hline
-        min. graph size    & 10                & 0.76795  \\
-                 & 20                & 0.77084  \\
-                           & 50                & 0.7566   \\
+        Nodes Interpolated & 1.0& 2& 5                      & 0.73967  \\
+                 & 1.0& 3& 5                      & 0.73882  \\
+                                   & 1.0& 5& 10                      & 0.71498  \\
+        \hline
+        min. graph size    & 1.0& 1& 10                & 0.76795  \\
+                 & 1.0& 1& 20                & 0.77084  \\
+                           & 1.0& 1& 50                & 0.7566   \\
+        \hline
+        Combination   & 0.5& 1& 20                & 0.77164  \\
+            & 0.75& 1& 20                & 0.78321  \\
+        \hline
+        HIG + RWSE   & 0.75& 1& 20                & 0.77924  \\
+        \hline
+        HIG + LapPE   & 0.75& 1& 20                & 0.78412  \\
     \end{tabular}
 \end{table}
 
