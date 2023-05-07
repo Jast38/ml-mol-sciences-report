@@ -185,10 +185,11 @@ The bias $b_{\Phi (v_i, v_j)}$ is produced by the so called spatial encoding, wh
 
 By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
 
-Finally Graphormer introduces a method to include edge information in the model by adding an the additional bias term $c_{ij}$ to the attention module. This bias is created by averaging the dot-products of edge features ($x_{e_n}$) and a learnable scalar ($(w_n^E)^T$), which is indexed according to the distance of the edge to the start node for each edge along the shortest path between each two connected nodes.
+Finally Graphormer introduces a method to include edge information in the model by adding an the additional bias term $c_{ij}$ to the attention module~(\autoref{eqn:bias_2}). This bias is created by averaging the dot-products of edge features ($x_{e_n}$) and a learnable scalar ($(w_n^E)^T$), which is indexed according to the distance of the edge to the start node for each edge along the shortest path between each two connected nodes.
 
 \begin{equation}
     c_{ij} = \frac{1}{N} \sum_{n=1}^{N} x_{e_n}(w_n^E)^T
+    \label{eqn:bias_2}
 \end{equation}
 
 \subsubsection{GraphGPS}
