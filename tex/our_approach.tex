@@ -1,3 +1,308 @@
 \section{Our approach}
-In order to further strengthen our understanding, we decided to try to implement a graph machine learning method ourselves.
-As we knew we wouldn't be able to invent a game-changing method, we decided to try the simplest method we could imagine: A walk based embedding for whole graphs.
+To bolster our understanding, we decided to implement a graph machine learning method ourselves. Recognizing that it would be unlikely for us to devise a groundbreaking approach, we aimed to explore the simplest method we could imagine: a walk-based embedding for whole graphs.
+
+For our walk based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (see \cite{2016node2vec}). One of the primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality.
+
+Our method can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node IDs are substituted with the corresponding node features. This process results in a text document-like representation of the graph. Utilizing natural language processing techniques, we then transform the text document into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
+
+\subsection{Walk based graph embeddings}
+A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id), e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
+
+\begin{figure}[ht!]
+    \begin{minipage}{\linewidth}
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node[draw=red] (A) at (0,0) {0\\(0, 2, 2)};
+                    \node (B) at (0,4) {1\\(7, 0, 4)};
+                    \node (C) at (2.5,4) {2\\(2, 0, 4)};
+                    \node[draw=red] (D) at (2.5,2) {3\\(8, 3, 9)};
+                    \node (E) at (5, 0) {4\\(3, 4, 7)};
+                    \node[draw=red] (F) at (5,4) {5\\(2, 1, 7)} ;
+                \end{scope}
+
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (B) edge node {} (C);
+                    \path [-, draw=red] (A) edge node {} (D);
+                    \path [-] (D) edge node {} (C);
+                    \path [-] (A) edge node {} (E);
+                    \path [-] (D) edge node {} (E);
+                    \path [-, draw=red] (D) edge node {} (F);
+                    \path [-] (C) edge node {} (F);
+                    \path [-] (E) edge node {} (F);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+        \begin{minipage}{.5\linewidth}
+            \centering
+            (0, 3, 5) \\
+            $\Downarrow$ \\
+            (0\_0 1\_2 2\_2) (0\_8 1\_3 2\_9) (0\_2 1\_1 2\_7) \\
+            $\Downarrow$ \\
+            0\_0 1\_2 2\_2 0\_8 1\_3 2\_9 0\_2 1\_1 2\_7
+        \end{minipage}
+    \end{minipage}
+    \caption[short]{Example of graph on which a walk is done that is converted into a sentence}
+    \label{figure:example_walk_to_sentence}
+\end{figure}
+
+Lets talk about a concrete example. In the left side of figure \ref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
+
+After this overview, we can formalize this method. Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{\ w_i \mid i \in 0 \dots n  \}$. Now we create a set $W'$ where for each walk we substitute the node id with the features of the node. If we view each walk as sentence we get a set of documents (multiple sentences). These documents are feed into a text embedding method.
+
+\begin{minipage}{\linewidth}
+    \begin{algorithm}[H]
+        %\SetKwSty{text}
+        \DontPrintSemicolon
+        \SetArgSty{text}
+        \SetProgSty{text}
+        \SetKw{KwIn}{in}
+
+        \SetKwProg{Fn}{def}{}{}
+
+        \Fn{get\_vectors(graphs)}{
+            documents = [ ]\;
+            \ForAll{graph \KwIn graphs}{
+                walks = generate\_walks(graph)\;
+                document = walks\_to\_document(walks)\;
+                documents.append(document)\;
+            }
+
+            model = Text\_Embedding\_Model()\;
+            model.fit(documents)\;
+            \Return model.get\_document\_vectors()\;
+        }
+
+        \caption{basic idea of our walk based embedding}
+        \label{algorithm:basic_idea_walk_to_vector}
+    \end{algorithm}
+\end{minipage}
+
+Pseudocode for our first implementation of our graph embedding method is given in algorithm \ref{algorithm:basic_idea_walk_to_vector}. We identified two ways to influence the embedding in a meaningful way:
+\begin{enumerate}
+    \item
+     change the way walks are generated
+
+    \item
+     change the text embedding model
+\end{enumerate}
+
+\subsubsection{change the way walks are generated}
+To accurately depict the neighborhood of a vertex, it is essential to represent the neighborhood within the generated document. This can be achieved when every combination of adjacent vertices is represented in the document multiple times.
+
+We have considered two approaches for generating walks: All Pair Shortest Paths (APSP) and Random Walks. Each method possesses distinct advantages and drawbacks. APSP tends to have more hotspots of frequently visited graphs, which may introduce bias in the document; however, it generates similar walks for structurally analogous graphs. On the other hand, Random Walks can be set to a specific length and do not exhibit the same issue with frequently visited graphs. Nevertheless, they do not guarantee the generation of similar walks for structurally similar graphs.
+
+One reason to consider using graph walks for analysis is that, given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree. These walks therefore provide insight into the graph's structure, capturing information about the relationships between vertices and the paths connecting them. By aggregating data from numerous walks, a comprehensive representation of the graph can be formed, enabling its reconstruction for further evaluation.
+
+In our initial approach, we employed the all-pair shortest paths method; however, we quickly discovered that this was impractical for large datasets, as the sheer volume of text data overwhelmed the document embedding technique. Consequently, we opted for an alternative solution that limits the number of walks for each graph to a parameter referred to as sample\_size in the code.
+
+By performing the random selection of two nodes sample\_size times, we obtain the shortest path between them and add it to the list of walks. Assuming the sample\_size is sufficiently large, it is reasonable to expect that every node will be visited multiple times. This alternative approach offers a more manageable solution when working with extensive datasets.
+
+\paragraph{Reconstructing a graph from walks}
+With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to Figure \ref{figure:random_walk_cant_differentiate}. It is evident that each potential walk over one two graphs can be accommodated within the other graph as well.
+
+\begin{figure}[ht!]
+    \begin{minipage}{\linewidth}
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node (A) at (0,0) {0};
+                    \node (B) at (0,2) {0};
+                    \node (C) at (5,2) {0};
+                    \node (D) at (5,0) {0};
+                \end{scope}
+
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (A) edge node {} (D);
+                    \path [-] (C) edge node {} (B);
+                    \path [-] (C) edge node {} (D);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+        \begin{minipage}{.5\linewidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{scope}[every node/.style={circle,thick,draw, align=center}]
+                    \node (A) at (0,0) {0};
+                    \node (B) at (0,2) {0};
+                    \node (C) at (5,2) {0};
+                    \node (D) at (5,0) {0};
+                \end{scope}
+
+                \begin{scope}[>={Stealth[black]},
+                    every node/.style={circle},
+                    every edge/.style={draw, very thick}]
+                    \path [-] (A) edge node {} (B);
+                    \path [-] (A) edge node {} (D);
+                    \path [-] (C) edge node {} (D);
+                \end{scope}
+            \end{tikzpicture}
+        \end{minipage}%
+    \end{minipage}
+    \caption[short]{Example of two graphs for whom each walk done one graph could also be done on the other}
+    \label{figure:random_walk_cant_differentiate}
+\end{figure}
+
+In the case of regular graphs, where all vertices share the same degree, nodes with identical features often appear indistinguishable during walks. As a result, due to these inherent limitations, we did not expect walk-based whole graph embeddings to produce outstanding results for such graphs.
+
+\subsubsection{change the text embedding model}
+Throughout the entirety of our project, we employed Doc2Vec\cite{2014doc2vec} for transforming our walks into vector representations. Doc2Vec facilitates the training of a custom model using our specific vocabulary, allowing for the embedding of documents into vectors within this vocabulary. Despite our efforts to identify an alternative document-to-vector model that was user-friendly, we were unable to locate a suitable candidate.
+
+
+
+%TODO Scaling
+
+\subsubsection{downstream training}
+For downstream training of the regressor or classifier, we followed scikit-learn's recommendations and chose Support Vector Regression (SVR) or Support Vector Classification (SVC) to train and generate the label prediction given the vector generated by out method. In the case of multi-output prediction, we employed scikit-learn's multi-output methods but sticked to the mentioned regressors and classifiers for the individual task. To replace missing values in the training data, we utilized scikit-learn's SimpleImputer.
+
+\subsubsection{results}
+Given the significant amount of data generated by random walks, which subsequently resulted in an extensive volume of training data for Doc2Vec, we focused on smaller datasets from the Open Graph Benchmark (OGB). For datasets with fewer than 10,000 graphs, we ran our model ten times; for those with less than 100,000 graphs, we executed it three times; and for larger datasets, we carried out a single run. The outcomes are presented in Table \ref{table:ogbg-molfreesolv_results}.
+%TODO Zahlen korrekt?
+
+As our methode performed quite poorly on the classification datasets, we guess this is because of a combination out method in general and the imbalanced tasks that most of the dataset have.
+%TODO Korrelation unbalanced and schlechte Ergebnisse
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{@{}lrrrrrr@{}}
+        \toprule
+        dataset          & \multicolumn{2}{c}{paths2vec} & \multicolumn{2}{c}{random vectors} & \multicolumn{2}{c}{t-test}                         \\ \cmidrule(l){2-3}\cmidrule(l){4-5}\cmidrule(l){6-7}
+                         & mean                          & std                                & mean                       & std    & D & p-value  \\ \midrule
+        ogbg-molesol     & 1.4651                        & 0.0309                             & 2.2844                     & 0.0239 & 1 & 1.08E-05 \\
+        ogbg-molfreesolv & 5.7668                        & 0.0557                             & 6.7620                     & 0.0296 & 1 & 1.08E-05 \\
+        ogbg-mollipo     & TODO                          & TODO                               & TODO                       & TODO   &   &          \\ \bottomrule
+    \end{tabular}
+    \caption{comparison of the rmse for 10 runs on the dataset regression datasets}
+    \label{table:ogbg-molfreesolv_results}
+\end{table}
+
+%dataset: ogbg-molesol
+%method: path2vec
+%runs: 10
+%s/run: 104.46074087619782
+%max_elem: None
+%metric: rmse
+%mean: 1.4650684093103707
+%std: 0.030915580561724592
+%Full results: [1.4805793712140853, 1.512840374014278, 1.4948016237940056, 1.4546563098998249, 1.4205313337828955, 1.4244720100060198, 1.4528220175240352, 1.4327516357485357, 1.4959523407125848, 1.4812770764074432]
+%
+%dataset: ogbg-molesol
+%method: random
+%runs: 10
+%s/run: 0.3586175203323364
+%max_elem: None
+%metric: rmse
+%mean: 2.2844067489984825
+%std: 0.02391323910315547
+%Full results: [2.325762106907924, 2.258810890995126, 2.2734153855484442, 2.3033288610272677, 2.2607158061986605, 2.2931807601145286, 2.2894593218727386, 2.317584782259246, 2.259336147358388, 2.2624734277024983]
+%
+%dataset: ogbg-molfreesolv
+%method: path2vec
+%runs: 10
+%s/run: 25.153266191482544
+%max_elem: None
+%metric: rmse
+%mean: 5.766806944236939
+%std: 0.05568732483125826
+%Full results: [5.845485320572697, 5.798028837319275, 5.7320061679108205, 5.732598668423128, 5.742955713544259, 5.744742970520937, 5.649313219500344, 5.8379051124871, 5.803169838486743, 5.781863593604088]
+%
+%dataset: ogbg-molfreesolv
+%method: random
+%runs: 10
+%s/run: 0.20943782329559327
+%max_elem: None
+%metric: rmse
+%mean: 6.76196326087449
+%std: 0.029552611338306528
+%Full results: [6.791426168369987, 6.736655745825386, 6.793114403352712, 6.754077890793254, 6.782569430904212, 6.815082086671177, 6.721245614003706, 6.74722052509353, 6.742819582267303, 6.735421161463635]
+%
+
+%dataset: ogbg-molclintox
+%method: path2vec
+%runs: 3
+%s/run: 101.18875924746196
+%max_elem: None
+%metric: rocauc
+%mean: 0.5
+%std: 0.0
+%Full results: [0.5, 0.5, 0.5]
+%
+%dataset: ogbg-molclintox
+%method: random
+%runs: 3
+%s/run: 4.26586373647054
+%max_elem: None
+%metric: rocauc
+%mean: 0.5
+%std: 0.0
+%Full results: [0.5, 0.5, 0.5]
+
+%dataset: ogbg-molbace
+%method: path2vec
+%runs: 3
+%s/run: 147.6082248687744
+%max_elem: None
+%metric: rocauc
+%mean: 0.6136752136752137
+%std: 0.03083614349654541
+%Full results: [0.6531135531135531, 0.61007326007326, 0.5778388278388279]
+%
+%dataset: ogbg-molbace
+%method: random
+%runs: 3
+%s/run: 4.282034635543823
+%max_elem: None
+%metric: rocauc
+%mean: 0.4718559218559218
+%std: 0.025216409753353153
+%Full results: [0.48772893772893766, 0.43626373626373627, 0.4915750915750915]
+
+%dataset: ogbg-molhiv
+%method: path2vec
+%runs: 1
+%s/run: 2538.615347623825
+%max_elem: None
+%metric: rocauc
+%mean: 0.5
+%std: 0.0
+%Full results: [0.5]
+%
+%dataset: ogbg-molhiv
+%method: random
+%runs: 1
+%s/run: 235.61367201805115
+%max_elem: None
+%metric: rocauc
+%mean: 0.5
+%std: 0.0
+%Full results: [0.5]
+
+%dataset: ogbg-mollipo
+%method: path2vec
+%runs: 10
+%s/run: 1114.4580694437027
+%max_elem: None
+%metric: rmse
+%mean: 1.1267265598831409
+%std: 0.010941911317538683
+%Full results: [1.130523029601864, 1.1180415455366692, 1.11713770294816, 1.1438490144237519, 1.1162019156280185, 1.1414678282002018, 1.1365789984149048, 1.1242052746242168, 1.1293786877117118, 1.1098816017419109]
+%
+%dataset: ogbg-mollipo
+%method: random
+%runs: 10
+%s/run: 2.4149117469787598
+%max_elem: None
+%metric: rmse
+%mean: 1.242910656076687
+%std: 0.01241125676455565
+%Full results: [1.241876450957025, 1.2538404116825306, 1.2333361290743448, 1.2264159029169768, 1.22282195981142, 1.2522733034224318, 1.2408982322712339, 1.2591096012683938, 1.2388358095814085, 1.2596987597811033]
+%
+%https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html

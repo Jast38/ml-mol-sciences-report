@@ -13,31 +13,31 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
 
 \begin{table}
     \centering
-    \caption{Node feature vector}
-    \label{node_feature_list}
     \begin{tabular}{lll} % TODO  Value Range shoulb be replaced by data type
         \toprule
-        Index & Feature                       & Value Range                                                  \\ \midrule
-        0     & atom number (H excluded, C=5) & 1 - 119                                                      \\
-        1     & chirality                     & unspecified, Tetrahedral CW, Tetrahedral CCW, other and misc \\
-        2     & degree                        & 0 - 10, misc                                                 \\
-        3     & formal charge                 & -5 - 5, misc                                                 \\
-        4     & number of H-atoms             & 0 - 8, misc                                                  \\
-        5     & number of radicals            & 0 - 4, misc                                                  \\
-        6     & hybridization                 & SP, SP2, SP3, SP3D, SP3D2, misc                              \\
-        7     & is aromatic                   & true, false                                                  \\
-        8     & is in ring                    & true, false                                                  \\ \bottomrule
+        index & feature            & feature type \\ \midrule
+        0     & atom number        & multi-class  \\
+        1     & chirality          & multi-class  \\
+        2     & degree             & multi-class  \\
+        3     & formal charge      & multi-class  \\
+        4     & number of H-atoms  & multi-class  \\
+        5     & number of radicals & multi-class  \\
+        6     & hybridization      & multi-class  \\
+        7     & is aromatic        & binary-class \\
+        8     & is in ring         & binary-class \\ \bottomrule
     \end{tabular}
+    \caption{Node feature vector}
+    \label{node_feature_list}
 \end{table}
 
 \begin{table}
     \centering
     \begin{tabular}{lll}
         \toprule
-        Index & Feature       & Value Range                            \\\midrule
-        0     & bond type     & single, double, triple, aromatic, misc \\
-        1     & bond stereo   & none, z, e, cis, trans, any            \\
-        2     & is conjugated & true, false                            \\\bottomrule
+        index & feature       & feature type \\\midrule
+        0     & bond type     & multi-class  \\
+        1     & bond stereo   & multi-class  \\
+        2     & is conjugated & binary-class \\\bottomrule
     \end{tabular}
     \caption{Edge feature vector}
     \label{edge_features}
