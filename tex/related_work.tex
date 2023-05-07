@@ -88,10 +88,16 @@ Doc2vec has been shown to outperform other methods for document embeddings in se
 \subsection{Graph Embedding}
 Graph embedding is a technique in graph machine learning that maps nodes and edges of a graph into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems, and molecular sciences.
 
-The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
+The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors. This was visualized very nice by Google Research~\cite{epasto2019embedding} as seen in \autoref{fig:graph_embedding}. As seen here, overlapping communities are pulled apart while similar nodes are grouped together.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[scale=0.35]{tex/res/graph_embedding.png}
+    \caption{Embedding of a graph with overlapping communities using Node2Vec \tiny{source: \cite{epasto2019embedding}}}
+    \label{fig:graph_embedding}
+\end{figure}
 
 There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
-
 \subsection{node2vec}
 
 Node2Vec, presented by Grover and Leskovec in 2016, is a framework for learning low-dimensional representations of nodes in large-scale networks~\cite{2016node2vec}. The goal of node2vec is to learn embeddings that capture the structural information of nodes, such as their connectivity patterns, in a way that is useful for downstream tasks, such as node classification, clustering, and link prediction.
@@ -126,10 +132,18 @@ The Transformer architecture is build of many layers, each containing a self-att
 
 \begin{align}
     Q = HW_Q,\quad K = HW_K,\quad V = HW_V,\label{eqn:attention-alpha} \\
-    A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V,\label{eqn:attention-alpha2}
+    A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V, \\
+    FFN(x) = \max(0,xW_1 + b_1)W_2 + b_2
+    \label{eqn:attention-alpha2}
 \end{align}
 
-Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model. $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
+Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model.
+
+Queries are basically one-hot feature vectors, representing the features of interest, which are then multiplied with the transposed Key matrix to get feature specific masks (denoted as $A$ above). Those masks are then used during Attention do isolate specific features from the values(denoted in $\attn{H}$ above), increasing the correctness of value predictions.
+
+$d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
+
+After each self-attention module follows a feedworard neural network, denoted in line $(3)$ of \autoref{eqn:attention-alpha2}. During this step, ReLU is used to drown out negative values, $x$ are masked word activities, $(W_1 + b_1)$ denotes a multi-word feature creation matrix and $(W_2 + b_2)$ is a transition matrix.
 
 \subsection{Graph Transformers}
 After the success of Transformers for NLP problems~\cite{kalyan2021ammus}, many researchers tried adapting the ideas of Transformer for graph machine learning problems, taking advantage of the benefits of global attention in graph models, thus a multitude of graph transformer models~\cite{dwivedi2021generalizationTransformer,2021graphormer,kreuzer2021rethinking,mialon2021graphit,wu2022representing} were published. Many of those ideas were leveraged in GraphGPS~\cite{2023graphgps}, as described in \ref{sec:graphgps} and \ref{sec:graphgps_hig}.
