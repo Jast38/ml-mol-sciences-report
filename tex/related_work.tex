@@ -117,7 +117,9 @@ Graph2vec uses a negative sampling technique that is similar to the one used in 
 The resulting embeddings capture the structural properties of the graphs, allowing them to be used for various downstream tasks. In our case, we will mainly use Graph2vec as a benchmark and reference point.
 
 \subsection{Transformers}
-In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. The Transformer architecture is build of many layers, each containing a self-attention module and a position-wise feed-forward network. Self-attention is then calculated as described in~\cite{2021graphormer}:
+In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically. 
+
+The Transformer architecture is build of many layers, each containing a self-attention module and a position-wise feed-forward network. Self-attention is then calculated as described in~\cite{2021graphormer}:
 
 \begin{align}
     Q = HW_Q,\quad K = HW_K,\quad V = HW_V,\label{eqn:attention-alpha} \\
@@ -125,6 +127,15 @@ In 2017 Vaswani et al. proposed a new network architecture for NLP problems, cal
 \end{align}
 
 Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model. $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
+
+\subsection{Graph Transformers}
+After the success of Transformers for NLP problems~\cite{kalyan2021ammus}, many researchers tried adapting the ideas of Transformer for graph machine learning problems, taking advantage of the benefits of global attention in graph models, thus a multitude of graph transformer models~\cite{dwivedi2021generalizationTransformer,2021graphormer,kreuzer2021rethinking,mialon2021graphit,wu2022representing} were published. Many of those ideas were leveraged in GraphGPS~\cite{2023graphgps}, as described in \ref{sec:graphgps} and \ref{sec:graphgps_hig}.
+
+\subsubsection{Graph Transformer Networks}
+GTNs, proposed by Dwivedi et al.~\cite{dwivedi2021generalizationTransformer}, are designed to leverage graph sparsity and positional encodings and add them as a bias during self-attention. Attending to the whole graph is often not feasible because of graph size and node count, therefore GTNs only attend to the local neighborhood of nodes. Additionally, positional encodings are leveraged, to alleviate the missing structural information using Transformers, thus encoding important graph structural information into the Transformer. Positional encodings are created using Laplacian eigenvectors~\cite{belkin2003laplacian}, which are added to the node features.
+
+The key differences of GTNs with respect to original Transformers are the following. Neighborhood connectivity is used as the function for the attention mechanism, which is done by computing a weighted sum of the surrounding node embeddings. Positional encodings are replaced by Laplacian eigenvectors, which are precomputed for each graph and additionally, edge representations are added, to engrain important edge information into the model. Those edge features are learned by a separate feed-forward neural network, which takes the concatenated node embeddings as an input and the resulting edge features are again used in self-attention to update node embeddings.
+
 
 \subsubsection{Graphormer}
 As an adaption of Transformers~\cite{vaswani2017attention} for graph representation learning, Graphormer~\cite{2021graphormer} was presented by Ying et al., providing a performant Transformer model, excelling in various graph representation learning tasks, particularly for complex structures.
@@ -146,6 +157,13 @@ The other two encodings are added as bias to the Attention Module used in Transf
     \label{eqn:attention-matrix}
 \end{equation}
 
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[scale=0.35]{tex/res/graphormer_attention.png}
+    \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
+    \label{fig:graphormer_att}
+\end{figure}
+
 The bias $b_{\Phi (v_i, v_j)}$ is produced by the so called spatial encoding, which captures positional information for each node with respect to the network. This is achieved by using the distance of the shortest path between two connected nodes, described by the function $\Phi$, combined with a learnable vector which is indexed according to $\Phi$. The resulting scalar is added as bias in the self-attention module.
 
 By doing that, the model can attend to a more relevant subset of the network according to the task. An example given in the paper is the possibility to increase attention to nodes surrounding a given node instead of nodes which lay further away.
@@ -156,14 +174,8 @@ Finally Graphormer introduces a method to include edge information in the model 
     c_{ij} = \frac{1}{N} \sum_{n=1}^{N} x_{e_n}(w_n^E)^T
 \end{equation}
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[scale=0.35]{tex/res/graphormer_attention.png}
-    \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
-    \label{fig:graphormer_att}
-\end{figure}
-
 \subsubsection{GraphGPS}
+\label{sec:graphgps}
 L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Powerful, Scalable Graph Transformer.'~\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.
 
 GraphGPS serves as a preprocessor for the actual model learning on the dataset. The authors tested GraphGPS with several models, such as Transformer, Performer, BigBird, Gine, and more. They designed it to allow models that permit only Node Features, known as the Global Attention layer, as well as models that permit both Node and Edge Features, known as the MPNN layer. Both layers can also be used in combination to integrate the distinct advantages of two models.
