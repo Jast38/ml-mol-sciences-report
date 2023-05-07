@@ -1,0 +1,19 @@
+dataset: ogbg-molsider
+method: path2vec
+runs: 3
+s/run: 228.0486786365509
+max_elem: None
+metric: rocauc
+mean: 0.5098890188864375
+std: 0.0011397466368570342
+Full results: [0.5100200928021562, 0.5084322061414661, 0.51121475771569]
+
+dataset: ogbg-molsider
+method: random
+runs: 3
+s/run: 2.762382666269938
+max_elem: None
+metric: rocauc
+mean: 0.4999858911106709
+std: 0.00248041328342141
+Full results: [0.4995778382218375, 0.5032071670831837, 0.4971726680269915]

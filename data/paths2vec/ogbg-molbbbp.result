@@ -1,0 +1,19 @@
+dataset: ogbg-molbbbp
+method: path2vec
+runs: 3
+s/run: 285.1227839787801
+max_elem: None
+metric: rocauc
+mean: 0.7465564738292012
+std: 0.01184893287471437
+Full results: [0.7479338842975207, 0.7603305785123967, 0.731404958677686]
+
+dataset: ogbg-molbbbp
+method: random
+runs: 3
+s/run: 0.9127055009206136
+max_elem: None
+metric: rocauc
+mean: 0.5
+std: 0.0
+Full results: [0.5, 0.5, 0.5]
