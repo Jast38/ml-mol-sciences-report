@@ -11,7 +11,31 @@ For comparing model performances, OGB provides leaderboards for different datase
 Our main focus will be Graph Property Prediction, mainly on the datasets ogb-molhiv and ogb-molpcba. Both these datasets are derived from MoleculeNet and respectively provide a large amount of molecules for molecular property prediction. Molecules are represented by graphs, where atoms are the nodes and corresponding chemical bonds are represented by the edges. Node features are represented as a 9-dimensional vector, edge feature vectors are 3-dimensional, the respective value ranges can be seen in \autoref{node_feature_list} and \autoref{edge_features}.
 For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Precision is used.
 
-\begin{table}
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{@{}lrrlr@{}}
+        \toprule
+        name             & graphs & tasks & task type             & max fraction positive \\ \midrule
+        ogbg-molhiv      & 41127  & 1     & binary classification & 0.035086              \\
+        ogbg-molpcba     & 437929 & 128   & binary classification & 0.143402              \\
+        ogbg-moltox21    & 7831   & 12    & binary classification & 0.120291              \\
+        ogbg-molbace     & 1513   & 1     & binary classification & 0.456709              \\
+        ogbg-molbbbp     & 2039   & 1     & binary classification & 0.765081              \\
+        ogbg-molclintox  & 1477   & 2     & binary classification & 0.936357              \\
+        ogbg-molmuv      & 93087  & 17    & binary classification & 0.000322              \\
+        ogbg-molsider    & 1427   & 27    & binary classification & 0.923616              \\
+        ogbg-moltoxcast  & 8576   & 617   & binary classification & 0.205340              \\
+        ogbg-molesol     & 1128   & 1     & regression            & na                    \\
+        ogbg-molfreesolv & 642    & 1     & regression            & na                    \\
+        ogbg-mollipo     & 4200   & 1     & regression            & na                    \\ \bottomrule
+    \end{tabular}
+    \label{table:}
+    \caption{the molecule datasets from ogb}
+\end{table}
+
+
+
+\begin{table}[h!]
     \centering
     \begin{tabular}{lll} % TODO  Value Range shoulb be replaced by data type
         \toprule
@@ -30,7 +54,7 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
     \label{node_feature_list}
 \end{table}
 
-\begin{table}
+\begin{table}[h!]
     \centering
     \begin{tabular}{lll}
         \toprule
@@ -41,27 +65,6 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
     \end{tabular}
     \caption{Edge feature vector}
     \label{edge_features}
-\end{table}
-
-\begin{table}[]
-    \centering
-    \begin{tabular}{@{}lrrlr@{}}
-        \toprule
-        name             & graphs & tasks & task type             & max fraction positive \\ \midrule
-        ogbg-molhiv      & 41127  & 1     & binary classification & 0.035086              \\
-        ogbg-molpcba     & 437929 & 128   & binary classification & 0.143402              \\
-        ogbg-moltox21    & 7831   & 12    & binary classification & 0.120291              \\
-        ogbg-molbace     & 1513   & 1     & binary classification & 0.456709              \\
-        ogbg-molbbbp     & 2039   & 1     & binary classification & 0.765081              \\
-        ogbg-molclintox  & 1477   & 2     & binary classification & 0.936357              \\
-        ogbg-molmuv      & 93087  & 17    & binary classification & 0.000322              \\
-        ogbg-molsider    & 1427   & 27    & binary classification & 0.923616              \\
-        ogbg-moltoxcast  & 8576   & 617   & binary classification & 0.205340              \\
-        ogbg-molesol     & 1128   & 1     & regression            & na                    \\
-        ogbg-molfreesolv & 642    & 1     & regression            & na                    \\
-        ogbg-mollipo     & 4200   & 1     & regression            & na                    \\ \bottomrule
-    \end{tabular}
-    \caption{TODO}
 \end{table}
 
 
@@ -117,7 +120,7 @@ Graph2vec uses a negative sampling technique that is similar to the one used in 
 The resulting embeddings capture the structural properties of the graphs, allowing them to be used for various downstream tasks. In our case, we will mainly use Graph2vec as a benchmark and reference point.
 
 \subsection{Transformers}
-In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically. 
+In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically.
 
 The Transformer architecture is build of many layers, each containing a self-attention module and a position-wise feed-forward network. Self-attention is then calculated as described in~\cite{2021graphormer}:
 
