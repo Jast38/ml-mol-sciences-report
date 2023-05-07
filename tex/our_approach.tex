@@ -1,7 +1,9 @@
 \section{Our approach}
-To bolster our understanding, we decided to implement a graph machine learning method ourselves. Recognizing that it would be unlikely for us to devise a groundbreaking approach, we aimed to explore the simplest method we could imagine: a walk-based embedding for whole graphs.
+To bolster our understanding, we decided to implement a graph machine learning method ourselves. Recognizing that it would be unlikely for us to devise a groundbreaking approach, we aimed to explore the simplest method we could imagine: a walk-based embedding.
 
-For our walk based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (see \cite{2016node2vec}). One of the primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality.
+For our walk-based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists (see \cite{2016node2vec}). One of the primary challenges in graph machine learning, as opposed to text-based machine learning, is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality.
+
+One reason to consider using graph walks for analysis is that, given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree\cite{Wittmann2009reconstruction}. These walks therefore provide insight into the graph's structure, capturing information about the relationships between vertices and the paths connecting them. By aggregating data from numerous walks, a comprehensive representation of the graph can be formed, enabling its reconstruction for further evaluation.
 
 Our method can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node IDs are substituted with the corresponding node features. This process results in a text document-like representation of the graph. Utilizing natural language processing techniques, we then transform the text document into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
 
@@ -52,7 +54,7 @@ A walk on graph is a unambiguously sequence of vertices and edges, where each ve
 
 Lets talk about a concrete example. In the left side of figure \ref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
 
-After this overview, we can formalize this method. Given a set of graphs $G = \{g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{\ w_i \mid i \in 0 \dots n  \}$. Now we create a set $W'$ where for each walk we substitute the node id with the features of the node. If we view each walk as sentence we get a set of documents (multiple sentences). These documents are feed into a text embedding method.
+Now we can formalize this method. Given a set of graphs $G = {g_i \mid i \in 0 \dots n }$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = {\ w_i \mid i \in 0 \dots n }$. Next, we create a new set $W'$ in which we substitute the node ID with the node features for each walk. If we consider each walk as a sentence, we obtain a set of documents (comprising multiple sentences). These documents are then fed into a text embedding method. The pseudocode for our initial implementation of the graph embedding method is provided in algorithm \ref{algorithm:basic_idea_walk_to_vector}.
 
 \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
@@ -82,21 +84,9 @@ After this overview, we can formalize this method. Given a set of graphs $G = \{
     \end{algorithm}
 \end{minipage}
 
-Pseudocode for our first implementation of our graph embedding method is given in algorithm \ref{algorithm:basic_idea_walk_to_vector}. We identified two ways to influence the embedding in a meaningful way:
-\begin{enumerate}
-    \item
-     change the way walks are generated
 
-    \item
-     change the text embedding model
-\end{enumerate}
-
-\subsubsection{change the way walks are generated}
-To accurately depict the neighborhood of a vertex, it is essential to represent the neighborhood within the generated document. This can be achieved when every combination of adjacent vertices is represented in the document multiple times.
-
+\subsection{walk generation}
 We have considered two approaches for generating walks: All Pair Shortest Paths (APSP) and Random Walks. Each method possesses distinct advantages and drawbacks. APSP tends to have more hotspots of frequently visited graphs, which may introduce bias in the document; however, it generates similar walks for structurally analogous graphs. On the other hand, Random Walks can be set to a specific length and do not exhibit the same issue with frequently visited graphs. Nevertheless, they do not guarantee the generation of similar walks for structurally similar graphs.
-
-One reason to consider using graph walks for analysis is that, given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree. These walks therefore provide insight into the graph's structure, capturing information about the relationships between vertices and the paths connecting them. By aggregating data from numerous walks, a comprehensive representation of the graph can be formed, enabling its reconstruction for further evaluation.
 
 In our initial approach, we employed the all-pair shortest paths method; however, we quickly discovered that this was impractical for large datasets, as the sheer volume of text data overwhelmed the document embedding technique. Consequently, we opted for an alternative solution that limits the number of walks for each graph to a parameter referred to as sample\_size in the code.
 
@@ -153,7 +143,7 @@ With an adequate quantity of walks over a graph, one can partially reconstruct t
 
 In the case of regular graphs, where all vertices share the same degree, nodes with identical features often appear indistinguishable during walks. As a result, due to these inherent limitations, we did not expect walk-based whole graph embeddings to produce outstanding results for such graphs.
 
-\subsubsection{change the text embedding model}
+\subsubsection{text embedding}
 Throughout the entirety of our project, we employed Doc2Vec\cite{2014doc2vec} for transforming our walks into vector representations. Doc2Vec facilitates the training of a custom model using our specific vocabulary, allowing for the embedding of documents into vectors within this vocabulary. Despite our efforts to identify an alternative document-to-vector model that was user-friendly, we were unable to locate a suitable candidate.
 
 
