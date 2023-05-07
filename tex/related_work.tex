@@ -15,10 +15,9 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
     \centering
     \caption{Node feature vector}
     \label{node_feature_list}
-    \begin{tabular}{c || l| p{6cm} |}
-        Index & Feature                       & Value Range                                                  \\
-        \hline
-        \hline
+    \begin{tabular}{lll} % TODO  Value Range shoulb be replaced by data type
+        \toprule
+        Index & Feature                       & Value Range                                                  \\ \midrule
         0     & atom number (H excluded, C=5) & 1 - 119                                                      \\
         1     & chirality                     & unspecified, Tetrahedral CW, Tetrahedral CCW, other and misc \\
         2     & degree                        & 0 - 10, misc                                                 \\
@@ -27,22 +26,42 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
         5     & number of radicals            & 0 - 4, misc                                                  \\
         6     & hybridization                 & SP, SP2, SP3, SP3D, SP3D2, misc                              \\
         7     & is aromatic                   & true, false                                                  \\
-        8     & is in ring                    & true, false                                                  \\
+        8     & is in ring                    & true, false                                                  \\ \bottomrule
     \end{tabular}
 \end{table}
 
 \begin{table}
     \centering
-    \caption{Edge feature vector}
-    \label{edge_features}
-    \begin{tabular}{l || l p{6cm} |}
-        Index & Feature       & Value Range                            \\
-        \hline
-        \hline
+    \begin{tabular}{lll}
+        \toprule
+        Index & Feature       & Value Range                            \\\midrule
         0     & bond type     & single, double, triple, aromatic, misc \\
         1     & bond stereo   & none, z, e, cis, trans, any            \\
-        2     & is conjugated & true, false
+        2     & is conjugated & true, false                            \\\bottomrule
     \end{tabular}
+    \caption{Edge feature vector}
+    \label{edge_features}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{@{}lrrlr@{}}
+        \toprule
+        name             & graphs & tasks & task type             & max fraction positive \\ \midrule
+        ogbg-molhiv      & 41127  & 1     & binary classification & 0.035086              \\
+        ogbg-molpcba     & 437929 & 128   & binary classification & 0.143402              \\
+        ogbg-moltox21    & 7831   & 12    & binary classification & 0.120291              \\
+        ogbg-molbace     & 1513   & 1     & binary classification & 0.456709              \\
+        ogbg-molbbbp     & 2039   & 1     & binary classification & 0.765081              \\
+        ogbg-molclintox  & 1477   & 2     & binary classification & 0.936357              \\
+        ogbg-molmuv      & 93087  & 17    & binary classification & 0.000322              \\
+        ogbg-molsider    & 1427   & 27    & binary classification & 0.923616              \\
+        ogbg-moltoxcast  & 8576   & 617   & binary classification & 0.205340              \\
+        ogbg-molesol     & 1128   & 1     & regression            & na                    \\
+        ogbg-molfreesolv & 642    & 1     & regression            & na                    \\
+        ogbg-mollipo     & 4200   & 1     & regression            & na                    \\ \bottomrule
+    \end{tabular}
+    \caption{TODO}
 \end{table}
 
 
