@@ -72,7 +72,7 @@ We additionally used ogb-molfreesolv as a smaller dataset which is also derived 
 
 We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018.
 
-\subsubsection{doc2vec}
+\subsubsection{Doc2vec}
 Doc2vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2vec, introduced by Le and Mikolov~\cite{2014doc2vec}, extends the popular Word2vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2vec builds the base for many ideas regarding graph embedding.
 
 Doc2vec learns a vector representation for each document in a corpus by utilizing a neural network architecture called Paragraph Vector. The architecture is similar to that of Word2vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory (DM) and Distributed Bag of Words (DBOW).
@@ -98,7 +98,7 @@ The goal for this technique is to produce a vector which can be used as input fo
 \end{figure}
 
 There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
-\subsection{node2vec}
+\subsection{Node2vec}
 
 Node2Vec, presented by Grover and Leskovec in 2016, is a framework for learning low-dimensional representations of nodes in large-scale networks~\cite{2016node2vec}. The goal of node2vec is to learn embeddings that capture the structural information of nodes, such as their connectivity patterns, in a way that is useful for downstream tasks, such as node classification, clustering, and link prediction.
 
@@ -110,7 +110,7 @@ Once the random walks are generated, node2vec uses the skip-gram model to learn 
 
 Node2vec has several advantages over previous methods for network embedding. While being scalable to large networks and being able to handle heterogeneous networks with multiple types of nodes and edges, it can also capture both the local and global structure of the network by tuning the $p$ and $q$ parameters. Additionally, it can handle noisy or incomplete networks by incorporating information from the context nodes. Finally, it can be applied to a wide range of downstream tasks, such as link prediction, node classification, and community detection.
 
-\subsubsection{graph2vec}
+\subsubsection{Graph2vec}
 Graph2vec is a method proposed by Narayanan et al.~\cite{2017graph2vec} for learning distributed representations of graphs. This approach builds on top of the previously described word2vec and Doc2vec methods, but instead of learning representations for words or paragraphs, it learns representations for graphs.
 
 The Graph2vec method is based on two main ideas: Firstly, a set of subgraphs is generated for each graph in the dataset, which can be seen as 'context graphs'. These subgraphs are used to train a skip-gram neural network to learn embeddings for all graphs.
@@ -139,7 +139,7 @@ The Transformer architecture is build of many layers, each containing a self-att
 
 Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model.
 
-Queries are basically one-hot feature vectors, representing the features of interest, which are then multiplied with the transposed Key matrix to get feature specific masks (denoted as $A$ above). Those masks are then used during Attention do isolate specific features from the values(denoted in $\attn{H}$ above), increasing the correctness of value predictions.
+Queries are basically one-hot feature vectors, representing the features of interest, which are then multiplied with the transposed Key matrix to get feature specific masks (denoted as $A$ above). Those masks are then used during Attention to isolate specific features from the values (denoted in $\attn{H}$ above), increasing the correctness of value predictions.
 
 $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
 
@@ -211,7 +211,7 @@ The authors categorized structural and positional information into two types sin
 A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cite{tencenc2021Hig,tencenc2021HigPaper} was submitted to the OGB leaderboard in 2021 by Wang et al., providing an implementation and a brief technical report describing the research. By using their method combined with Graphormer, they were able to achieve better average precision than all previous submissions.
 
 The report introduces heterogeneous interpolation, which is done by dropping the feature vectors of several randomly selected nodes and replacing them by the interpolated feature mix of all neighboring nodes.
-By using a mixing ratio, the influence of each neighbors features can be adapted. To account for possible information loss, KL-Divergence constraint loss is added. By doing that, the distributions of two identical graphs remain similar after interpolating some feature vectors. The general idea was visualized by Wang et al. in \autoref{fig:hig_figure}.
+By using a mixing ratio, the influence of each neighbors features can be adapted. To account for possible information loss, KL-Divergence constraint loss is added. By doing that, the distributions of two identical graphs remain similar, even after interpolating some feature vectors. The general idea was visualized by Wang et al. in \autoref{fig:hig_figure}.
 
 \begin{figure}[ht!]
     \centering
