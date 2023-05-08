@@ -1,0 +1,20 @@
+dataset: ogbg-moltox21
+method: path2vec
+runs: 10
+s/run: 844.8855988025665
+max_elem: None
+metric: rocauc
+mean: 0.5000375375375375
+std: 0.00011261261261260589
+Full results: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5003753753753754, 0.5, 0.5]
+
+dataset: ogbg-moltox21
+method: random
+runs: 10
+s/run: 24.476638317108154
+max_elem: None
+metric: rocauc
+mean: 0.5
+std: 0.0
+Full results: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+

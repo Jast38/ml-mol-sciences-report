@@ -1,0 +1,20 @@
+dataset: ogbg-molclintox
+method: path2vec
+runs: 10
+s/run: 220.56005108356476
+max_elem: None
+metric: rocauc
+mean: 0.5
+std: 0.0
+Full results: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+
+dataset: ogbg-molclintox
+method: random
+runs: 10
+s/run: 0.7061330795288085
+max_elem: None
+metric: rocauc
+mean: 0.5
+std: 0.0
+Full results: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+

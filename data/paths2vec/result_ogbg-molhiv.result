@@ -1,0 +1,20 @@
+dataset: ogbg-molhiv
+method: path2vec
+runs: 3
+s/run: 6182.0131096839905
+max_elem: None
+metric: rocauc
+mean: 0.505966159611993
+std: 0.005040441353585869
+Full results: [0.506048831569665, 0.49975198412698413, 0.5120976631393299]
+
+dataset: ogbg-molhiv
+method: random
+runs: 3
+s/run: 236.11187171936035
+max_elem: None
+metric: rocauc
+mean: 0.5
+std: 0.0
+Full results: [0.5, 0.5, 0.5]
+
