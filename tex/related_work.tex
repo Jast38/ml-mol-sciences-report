@@ -29,7 +29,7 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
         ogbg-molfreesolv & 642    & 1     & regression            & na                    \\
         ogbg-mollipo     & 4200   & 1     & regression            & na                    \\ \bottomrule
     \end{tabular}
-    \label{table:}
+    \label{table:ogb_mol_datasets}
     \caption{the molecule datasets from ogb}
 \end{table}
 
@@ -134,7 +134,7 @@ The Transformer architecture is build of many layers, each containing a self-att
 
 \begin{align}
     Q = HW_Q,\quad K = HW_K,\quad V = HW_V,\label{eqn:attention-alpha} \\
-    A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V, \\
+    A = \frac{QK^\top}{\sqrt{d_K}}, \quad \attn{H} = \softmax{A}V,     \\
     FFN(x) = \max(0,xW_1 + b_1)W_2 + b_2
     \label{eqn:attention-alpha2}
 \end{align}
