@@ -1,16 +1,16 @@
-\section{Our approach: Paths2Vec}
+\subsection{Paths2Vec}
 
 We decided to implement a graph machine learning method ourselves. Recognizing that it would be unlikely for us to devise a groundbreaking approach, we aimed to explore the simplest method we could imagine: a walk-based embedding.
 
 For our walk-based embedding we focused on the embedding of whole graphs, as a similar method to embed nodes already exists\cite{2016node2vec}. One of the primary challenges in graph machine learning as opposed to text-based machine learning is the multidimensionality of graphs. Each node can have varying numbers of neighbors and different features and feature types. Walk based embeddings reduce this multidimensionality as the generated walk is a 2d structure.
 
-Given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree\cite{Wittmann2009reconstruction}. These walks therefore provide insight into the graph, capturing information about the relationships between vertices and the paths connecting them. Aggregated data from numerous walks therefore contains information about the the graph.
+Given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree\cite{Wittmann2009reconstruction}. These walks therefore provide insight into the graph, capturing information about the relationships between vertices and the paths connecting them. Aggregated data from numerous walks therefore contains information about the graph.
 
 Our method, which we named Paths2Vec, can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node ids are substituted with the corresponding node features. This process results in a document-like representation of the graph. Utilizing natural language processing techniques, we then transform this 'document' into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
 
-Our implementations and code changes to existing methods can be found in our GitHub Repository~\cite{our_repo}.
+Our implementations and code changes to existing methods can be found in our GitHub Repository\cite{our_repo}.
 
-\subsection{Walk based graph embeddings}
+\subsubsection{Walk based graph embeddings}
 A walk on graph is a sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id). For example, $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and ends at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
 
 \begin{figure}[ht!]
@@ -55,7 +55,7 @@ A walk on graph is a sequence of vertices and edges, where each vertex is connec
     \label{figure:example_walk_to_sentence}
 \end{figure}
 
-Lets talk about a concrete example. In the left side of \autoref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
+Lets talk about a concrete example. In the left side of \autoref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence. So far this method only used nodes, but we use a trick to also use edges in the embedding. We treat edges like a node between two two nodes and prefix their features with an \emph{e}, while prefixing nodes features with a \emph{v}.
 
 Now we can formalize this method. Given a set of graphs $G = \{ g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{ w_i \mid i \in 0 \dots n \}$. Next, we create a new set $W'$ in which we substitute the node ID with the node features for each walk. If we consider each walk as a sentence, we obtain a set of documents (comprising of multiple sentences). These documents are then fed into a text embedding method. The pseudocode of our graph embedding method is provided in \autoref{algorithm:basic_idea_walk_to_vector}.
 
@@ -88,14 +88,14 @@ Now we can formalize this method. Given a set of graphs $G = \{ g_i \mid i \in 0
 \end{minipage}
 
 
-\subsection{Walk Generation}
+\subsubsection{Walk Generation}
 We have considered two approaches for generating walks: All Pair Shortest Paths (APSP) and Random Walks. Each method possesses distinct advantages and drawbacks. APSP tends to have more hotspots of frequently visited nodes, which may introduce bias in the document; however, it generates similar walks for structurally analogous graphs. On the other hand, Random Walks can be set to a specific length and do not exhibit the same issue with frequently visited nodes. Nevertheless, they do not guarantee the generation of similar walks for structurally similar graphs.
 
 In our initial approach, we employed the all-pair shortest paths method; however, we quickly discovered that this was impractical for large datasets, as the sheer volume of text data overwhelmed the document embedding technique. Consequently, we opted for an alternative solution that limits the number of walks for each graph to a parameter referred to as sample\_size in the code.
 
 By performing the random selection of two nodes sample\_size times, we obtain the shortest path between them and add it to the list of walks. Assuming that sample\_size is sufficiently large, it is reasonable to expect that every node will be visited multiple times. This alternative approach offers a more manageable solution when working with extensive datasets.
 
-\subsection{Limits of information}
+\subsubsection{Limits of information}
 With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to \autoref{figure:random_walk_cant_differentiate}. Both graphs consists of nodes that have the same feature, one is a circle, the other one a line. Each walk over one of the two graphs can be accommodated within the other graph as well. This hold true for random walks and for shortest paths.
 
 \begin{figure}[ht!]
@@ -191,35 +191,35 @@ These walks also have a hard time to give us information about the size of graph
 
 
 
-\subsubsection{Text Embedding}
+\subsubsubsection{Text Embedding}
 Throughout the entirety of our project, we employed Doc2Vec\cite{2014doc2vec} for transforming our walks into vector representations. Doc2Vec facilitates the training of a custom model using our specific vocabulary, allowing for the embedding of documents into vectors within this vocabulary. Despite our efforts to identify an alternative document-to-vector model that was user-friendly, we were unable to locate a suitable candidate.
 
 While Doc2Vec is easy to use, we don't use it the way it is intended to be used. As natural language and our document 'language' certainly differ, we expect that there is a better method to encode our documents. Doc2Vec generates word vectors by trying to predict the surroundings of the word (or the word by its surroundings). In natural language processing it makes sense to define the surroundings over the boundaries of sentences, but in our case, a new path/sentence has no semantic connection to the last one.
 
 %TODO Ein super langer random walk
 
-\subsubsection{Downstream training}
+\subsubsubsection{Downstream training}
 For downstream training of the regressor or classifier, we followed scikit-learn's recommendations and chose Support Vector Regression (SVR) or Support Vector Classification (SVC) to train and generate the label prediction, given the vector generated by our method. In the case of multi-output prediction, we employed scikit-learn's multi-output methods but sticked to the mentioned regressors and classifiers for the individual task. To replace missing values in the training data, we utilized scikit-learn's SimpleImputer.
 
-\subsubsection{Results}
+\subsubsubsection{Results}
 Given the significant amount of data generated by random walks, which subsequently resulted in an extensive volume of training data for Doc2Vec, we focused on smaller datasets from the Open Graph Benchmark (OGB). For datasets with fewer than 10,000 graphs, we ran our model ten times; for those with less than 100,000 graphs, we executed it three times. We were unable run our method on larger datasets. The outcomes are presented in \autoref{table:ogbg-classification_results} and \autoref{table:ogbg-regression_results}.
 
-Our models was only able to generate meaningful results on ogbg-molbace, ogbg-molhiv, ogbg-molesol, ogbg-molfreesolv and ogbg-mollipo. For ogbg-molbace and ogbg-molhiv we achieved an ROC-AUC significant greater then 0.5 on multiple runs. The regression datasets were compared against randomly generated vectors using the same downstream model.
+Our models was only able to generate meaningful results on ogbg-molbace, ogbg-molhiv, ogbg-molesol, ogbg-molfreesolv and ogbg-mollipo. For ogbg-molbace and ogbg-molhiv we achieved an ROC-AUC significant greater then 0.5 on multiple runs. The regression datasets were compared against randomly generated vectors using the same downstream model, the RMSE was always significant lower.
 
-\begin{table}[h!]
+\begin{table}[h]
     \centering
     \begin{tabular}{llrlll}
         \toprule
-        dataset         & metric & runs & train           & valid           & test            \\
+        dataset         & metric & runs & train            & valid            & test             \\
         \midrule
-        ogbg-molbace    & rocauc & 10   & 0.77 $\pm$ 0.01 & 0.63 $\pm$ 0.03 & 0.57 $\pm$ 0.01 \\
-        ogbg-molbbbp    & rocauc & 10   & 0.71 $\pm$ 0.01 & 0.74 $\pm$ 0.01 & 0.51 $\pm$ 0.01 \\
-        ogbg-molclintox & rocauc & 10   & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 \\
-        ogbg-molhiv     & rocauc & 3    & 0.57 $\pm$ 0.03 & 0.52 $\pm$ 0.02 & 0.54 $\pm$ 0.04 \\
-        ogbg-molmuv     & ap     & 3    & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 \\
-        ogbg-molsider   & rocauc & 10   & 0.55 $\pm$ 0.00 & 0.51 $\pm$ 0.00 & 0.51 $\pm$ 0.00 \\
-        ogbg-moltox21   & rocauc & 10   & 0.51 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 \\
-        ogbg-moltoxcast & rocauc & 10   & 0.51 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 \\
+        ogbg-molbace    & rocauc & 10   & 0.7743 +- 0.0087 & 0.6268 +- 0.0262 & 0.5730 +- 0.0144 \\
+        ogbg-molbbbp    & rocauc & 10   & 0.7135 +- 0.0057 & 0.7439 +- 0.0127 & 0.5072 +- 0.0067 \\
+        ogbg-molclintox & rocauc & 10   & 0.5017 +- 0.0029 & 0.5000 +- 0.0000 & 0.5000 +- 0.0000 \\
+        ogbg-molhiv     & rocauc & 3    & 0.5665 +- 0.0281 & 0.5238 +- 0.0211 & 0.5407 +- 0.0356 \\
+        ogbg-molmuv     & ap     & 3    & 0.0019 +- 0.0000 & 0.0023 +- 0.0000 & 0.0025 +- 0.0000 \\
+        ogbg-molsider   & rocauc & 10   & 0.5534 +- 0.0017 & 0.5069 +- 0.0019 & 0.5062 +- 0.0019 \\
+        ogbg-moltox21   & rocauc & 10   & 0.5150 +- 0.0027 & 0.5000 +- 0.0000 & 0.5004 +- 0.0003 \\
+        ogbg-moltoxcast & rocauc & 10   & 0.5105 +- 0.0033 & 0.5003 +- 0.0002 & 0.5003 +- 0.0001 \\
         \bottomrule
     \end{tabular}
 
@@ -227,15 +227,15 @@ Our models was only able to generate meaningful results on ogbg-molbace, ogbg-mo
     \label{table:ogbg-classification_results}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}[h]
     \centering
     \begin{tabular}{llrllll}
         \toprule
-        dataset          & metric & runs & train        & valid        & test         & test random  \\
+        dataset          & metric & runs & train           & valid           & test            & test random     \\
         \midrule
-        ogbg-molesol     & rmse   & 10   & 1.15 +- 0.02 & 1.51 +- 0.06 & 1.56 +- 0.04 & 2.42 +- 0.03 \\
-        ogbg-molfreesolv & rmse   & 10   & 2.39 +- 0.02 & 5.82 +- 0.09 & 4.01 +- 0.05 & 4.58 +- 0.05 \\
-        ogbg-mollipo     & rmse   & 10   & 0.95 +- 0.01 & 1.15 +- 0.01 & 1.08 +- 0.01 & 1.12 +- 0.01 \\
+        ogbg-molesol     & rmse   & 10   & 1.15 $\pm$ 0.02 & 1.51 $\pm$ 0.06 & 1.56 $\pm$ 0.04 & 2.42 $\pm$ 0.03 \\
+        ogbg-molfreesolv & rmse   & 10   & 2.39 $\pm$ 0.02 & 5.82 $\pm$ 0.09 & 4.01 $\pm$ 0.05 & 4.58 $\pm$ 0.05 \\
+        ogbg-mollipo     & rmse   & 10   & 0.95 $\pm$ 0.01 & 1.15 $\pm$ 0.01 & 1.08 $\pm$ 0.01 & 1.12 $\pm$ 0.01 \\
         \bottomrule
     \end{tabular}
     \caption{Results of the regression datasets}
@@ -243,12 +243,12 @@ Our models was only able to generate meaningful results on ogbg-molbace, ogbg-mo
 \end{table}
 
 
-\subsubsection{Conclusion}
+\subsubsubsection{Conclusion}
 We guess that the observed suboptimal performance may be attributed to the fact that our method is only capable of capturing certain types of information from the graph. As previously discussed, walk-based embeddings encounter difficulties in accurately representing the structural aspects of a graph, such as size and subgraphs. Our interpretation of these results is, that our model is able to capture the composition of the graph, specifically the relationships between different types of nodes. However, due to our limited knowledge about the datasets, we are unable to judge whether this hypothesis is consistent with the tasks associated with these datasets.
 
 Some of the classification datasets are also quite unbalanced, as can be seen in \autoref{table:ogb_mol_datasets}, which make them harder to train on. Regression datasets in a way are easier to train on, as the they benefit even from a slight increase in information in the produced vectors.
 
-\subsubsection{Outlook}
+\subsubsubsection{Outlook}
 We don't think that our approach by itself will generate good results for whole graph embeddings. Nevertheless, it might be interesting to search for a reason, why our method produces meaningful results on some datasets but not on others. This might give insight into the dataset and the task to solve but also give insight into graph embeddings in general.
 
 It might me also interesting to change out Doc2Vec for another, maybe faster method that offers the possibility to run the ogb large scale graph embedding dataset 'PCQM4Mv2'. Instead of concatenating shortest paths, it might also be interesting to use one, continuous, random walk. This would also solve the problem of the windows\_size of Doc2Vec.

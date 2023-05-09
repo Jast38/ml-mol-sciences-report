@@ -1,7 +1,7 @@
 \section{Our approach}
 \subsection{GraphGPS with HIG and IAOTR}
 \label{sec:graphgps_hig}
-The design of GraphGPS prioritizes flexibility, making it easy to modify and expand upon. This inspired us to integrate HIG-GraphClassification into GraphGPS, combining the concepts of two existing papers. Our focus was on incorporating the Positional Encodings (as shown in Figure \autoref{fig:gps-hig-position}) into the HIG model. However, during the implementation process, we unexpectedly designed what we call Illegal Arithmetic Operation Tensor Replacement (IAOTR). The nodes that would get replaced by an interpolation of feature vectors, get replaced by a very high negative number, e.g. -9223372036854775808. This happens because of a division by zero, although the program still executes. IAOTR astonishingly outperforms our HIG-Implementation.
+The design of GraphGPS prioritizes flexibility, making it easy to modify and expand upon. This inspired us to integrate HIG-GraphClassification into GraphGPS, combining the concepts of two existing papers. Our focus was on incorporating the Positional Encodings (as shown in Figure \autoref{fig:gps-hig-position}) into the HIG model. However, during the implementation process, we unexpectedly designed what we call Illegal Arithmetic Operation Tensor Replacement (IAOTR). The nodes that would get replaced by an interpolation of feature vectors, get replaced by a very high negative number. This happens because of a division by zero, although the program still executes. IAOTR astonishingly outperforms our HIG-Implementation.
 
 \begin{figure}[!ht]
     \centering
