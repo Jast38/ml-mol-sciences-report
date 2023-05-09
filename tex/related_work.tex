@@ -1,4 +1,4 @@
-\section{Methodology}
+\section{Methodology and Related Work}
 
 As we started our project examining DeepChem, we first looked into handcrafted graph to vector methods.
 
@@ -8,8 +8,7 @@ Later we looked into graph machine learning.
 Open Graph Benchmark(OGB)~\cite{2021ogb} is a framework for benchmarking machine learning on graphs, providing large-scale, real world datasets as well as an easy to use software framework for loading  datasets and evaluating model performance.
 For comparing model performances, OGB provides leaderboards for different datasets and challenges, split into the sections Node Property Prediction, Link Property Prediction and Graph Property Prediction, as well as a large-scale challenge~\cite{hu2021ogblsc} leaderboard, which aids comparison of performance on very large graphs.
 
-Our main focus will be Graph Property Prediction, mainly on the datasets ogb-molhiv and ogb-molpcba. Both these datasets are derived from MoleculeNet and respectively provide a large amount of molecules for molecular property prediction. Molecules are represented by graphs, where atoms are the nodes and corresponding chemical bonds are represented by the edges. Node features are represented as a 9-dimensional vector, edge feature vectors are 3-dimensional, the respective value ranges can be seen in \autoref{node_feature_list} and \autoref{edge_features}.
-For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Precision is used.
+Our main focus will be Graph Property Prediction, mainly on the datasets provided by MoleculeNet, those can be seen in~\autoref{table:ogb_mol_datasets}. All datasets are derived from MoleculeNet and added to OGB, each one respectively providing a large amount of molecules for molecular property prediction for different task types. Molecules are represented by graphs, where atoms are the nodes and corresponding chemical bonds are represented by the edges. Node features are represented as a 9-dimensional vector, edge feature vectors are 3-dimensional, the respective value ranges can be seen in \autoref{table:node_feature_list} and \autoref{table:edge_feature_list}.
 
 \begin{table}[h!]
     \centering
@@ -29,15 +28,14 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
         ogbg-molfreesolv & 642    & 1     & regression            & na                    \\
         ogbg-mollipo     & 4200   & 1     & regression            & na                    \\ \bottomrule
     \end{tabular}
-    \label{table:ogb_mol_datasets}
     \caption{the molecule datasets from ogb}
+    \label{table:ogb_mol_datasets}
 \end{table}
 
-
-
-\begin{table}[h!]
+\begin{table}[!ht]
+    \parbox{.49\linewidth}{
     \centering
-    \begin{tabular}{lll} % TODO  Value Range shoulb be replaced by data type
+    \begin{tabular}{lll} % TODO  Value Range should be replaced by data type
         \toprule
         index & feature            & feature type \\ \midrule
         0     & atom number        & multi-class  \\
@@ -51,10 +49,10 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
         8     & is in ring         & binary-class \\ \bottomrule
     \end{tabular}
     \caption{Node feature vector}
-    \label{node_feature_list}
-\end{table}
-
-\begin{table}[h!]
+    \label{table:node_feature_list}
+    }
+    \hfill
+    \parbox{.49\linewidth}{
     \centering
     \begin{tabular}{lll}
         \toprule
@@ -64,9 +62,9 @@ For ogb-molhiv the model is evaluated using ROC-AUC, for ogb-molpcba Average Pre
         2     & is conjugated & binary-class \\\bottomrule
     \end{tabular}
     \caption{Edge feature vector}
-    \label{edge_features}
+    \label{table:edge_feature_list}
+    }
 \end{table}
-
 
 We additionally used ogb-molfreesolv as a smaller dataset which is also derived from MoleculeNet. FreeSolv contains SMILES strings of molecules from the Free Solvation Database and consists of "experimental and calculated hydration free energy of small molecules in water"~\cite{2018moleculenet}. The model is evaluated using Root Mean Square Error.
 
@@ -90,7 +88,7 @@ Graph embedding is a technique in graph machine learning that maps nodes and edg
 
 The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors. This was visualized very nice by Google Research~\cite{epasto2019embedding} as seen in \autoref{fig:graph_embedding}. As seen here, overlapping communities are pulled apart while similar nodes are grouped together.
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=0.35]{tex/res/graph_embedding.png}
     \caption{Embedding of a graph with overlapping communities using Node2Vec \tiny{source: \cite{epasto2019embedding}}}
@@ -164,7 +162,7 @@ Graphormer achieves such good results by introducing three types of encodings as
 
 To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing learnable embedding vectors, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are scalars which are added to the features of each node, so node importance and semantic correlation are respected during self attention. Those scalars are indexed from two vectors according to the respective degrees as seen in \autoref{fig:graphormer_centr_enc}.
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=0.35]{tex/res/graphormer_centr_enc.png}
     \caption{Centrality Encoding: learnable embedding vectors are added to feature vectors of nodes}
@@ -177,7 +175,7 @@ The other two encodings are added as bias to the Attention Module used in Transf
     \label{eqn:attention-matrix}
 \end{equation}
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=0.35]{tex/res/graphormer_attention.png}
     \caption{Spatial Encoding (left) and Edge Encoding (right) added as bias to Attention Module}
@@ -203,7 +201,7 @@ GraphGPS serves as a preprocessor for the actual model learning on the dataset. 
 
 The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=0.13]{tex/res/gps_abstract.png}
     \caption{General overlook of GraphGPS taken from~\cite{2023graphgps}}
@@ -216,10 +214,10 @@ A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cit
 The report introduces heterogeneous interpolation, which is done by dropping the feature vectors of several randomly selected nodes and replacing them by the interpolated feature mix of all neighboring nodes.
 By using a mixing ratio, the influence of each neighbors features can be adapted. To account for possible information loss, KL-Divergence constraint loss is added. By doing that, the distributions of two identical graphs remain similar, even after interpolating some feature vectors. The general idea was visualized by Wang et al. in \autoref{fig:hig_figure}.
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
     \centering
     \includegraphics[scale=0.3]{tex/res/hig_figure.png}
-    \caption{Visualization of HIG-GraphClassification by Wang et al., \tiny{source: \cite{tencenc2021HigPaper}}}
+    \caption{Visualization of HIG-GraphClassification by Wang et al., taken from \cite{tencenc2021HigPaper}}
     \label{fig:hig_figure}
 \end{figure}
 
