@@ -1,4 +1,4 @@
-\section{Our approach: paths2vec}
+\section{Our approach: Paths2Vec}
 
 To bolster our understanding, we decided to implement a graph machine learning method ourselves. Recognizing that it would be unlikely for us to devise a groundbreaking approach, we aimed to explore the simplest method we could imagine: a walk-based embedding.
 
@@ -6,7 +6,7 @@ For our walk-based embedding we focused on the embedding of whole graphs, as a s
 
 One reason to consider using graph walks for analysis is that, given a sufficient number of walks over a graph, it becomes possible to reconstruct the original graph to some degree\cite{Wittmann2009reconstruction}. These walks therefore provide insight into the graph, capturing information about the relationships between vertices and the paths connecting them. By aggregating data from numerous walks, a comprehensive representation of the graph can be formed, enabling its reconstruction for further evaluation.
 
-Our method, which we called paths2vec, can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node IDs are substituted with the corresponding node features. This process results in a text document-like representation of the graph. Utilizing natural language processing techniques, we then transform the text document into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
+Our method, which we called Paths2Vec, can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node IDs are substituted with the corresponding node features. This process results in a text document-like representation of the graph. Utilizing natural language processing techniques, we then transform the text document into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
 
 Our implementations and code changes to existing methods can be found in our GitHub Repository~\cite{our_repo}.
 
@@ -166,7 +166,7 @@ For most datasets, our methodology did not yield significant outcomes for the ma
     \centering
     \begin{tabular}{@{}lllllll@{}}
         \toprule
-        name             & metric & paths2vec       & random          & ks-test p-value \\ \midrule
+        name             & metric & Paths2Vec       & random          & ks-test p-value \\ \midrule
         ogbg-molclintox  & rocauc & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.50 & 1.00000         \\
         ogbg-molmuv      & ap     & 0.00 $\pm$ 0.00 & 0.00 $\pm$ 0.00 & 1.00000         \\
         ogbg-moltox21    & rocauc & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.50 & 1.00000         \\
