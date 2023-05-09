@@ -8,6 +8,8 @@ One reason to consider using graph walks for analysis is that, given a sufficien
 
 Our method, which we called paths2vec, can be described at a high level as follows: Given a graph, we generate a list of walks over the graph, in which the node IDs are substituted with the corresponding node features. This process results in a text document-like representation of the graph. Utilizing natural language processing techniques, we then transform the text document into a vector representation. These vector representations can subsequently be employed to train a model capable of predicting various graph characteristics.
 
+Our implementations and code changes to existing methods can be found in our GitHub Repository~\cite{our_repo}.
+
 \subsection{Walk based graph embeddings}
 A walk on graph is a unambiguously sequence of vertices and edges, where each vertex is connected to the next vertex by an edge. Given a graph $g$, we can write a walk as list of nodes (denoted by their id), e.g. $(0, 2, 3)$ is a walk that start from the node with the id $0$, goes to $2$ and end at $3$. For a non-trivial graph there a many different possible walks, therefore we can create a set of walks $w$ that all walk on the same graph. At this moment the walk doesn't contain any information relevant for our task, for this we need to substitute the node ids with the corresponding features. We substitute each id with the feature value prefixed with index of the feature separated by an otherwise unused character. For this we require that the features of a node are ordered. Therefore our schema for a feature in the walk is FeatureIndex\_FeatureValue. We use this prefix in order to differentiate between same values of different feature types.
 
