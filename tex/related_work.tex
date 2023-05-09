@@ -78,7 +78,7 @@ On the contrary, the PV-DBOW model doesn't pay attention to the order of words a
 
 In both models, the document vector is learned by optimizing a loss function, typically the negative log-likelihood of predicting the target words. The resulting document vectors are continuous, dense, and low-dimensional, making them suitable for various downstream tasks, such as document classification, clustering, and information retrieval.
 
-Doc2Vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. This idea of capturing the semantics and meaning of the documents was the basis for many future implementations and also layed the path for good algorithms regarding graph embedding.
+Doc2Vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. This idea of capturing the semantics and meaning of the documents was the basis for many future implementations and also laid the path for good algorithms regarding graph embedding.
 
 \subsection{Graph Embedding}
 Graph embedding is a technique in graph machine learning that maps nodes, edges or whole graphs into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems and molecular sciences.
@@ -146,7 +146,7 @@ $d$ denotes the hidden dimensions, which in case of single-head self-attention i
 
 After each self-attention module follows a feedforward neural network, denoted in line $(3)$ of \autoref{eqn:attention-alpha2}. During this step, ReLU is used to drown out negative values, $x$ are masked word activities, $(W_1 + b_1)$ denotes a multi-word feature creation matrix and $(W_2 + b_2)$ is a transition matrix.
 
-As Transformer models achieved astonishing performance for NLP problems, they layed the path for a lot of research. Many teams tried to adapt the idea to graph machine learning, leading to interesting findings and proposals of many performant models, all using Transformer architecture as their starting point. Transformers and adaptions for graphs are used in GraphGPS~\cite{2023graphgps}, which we will describe later and use as a testing framework to compare different approaches to graph embedding.
+As Transformer models achieved astonishing performance for NLP problems, they laid the path for a lot of research. Many teams tried to adapt the idea to graph machine learning, leading to interesting findings and proposals of many performant models, all using Transformer architecture as their starting point. Transformers and adaptions for graphs are used in GraphGPS~\cite{2023graphgps}, which we will describe later and use as a testing framework to compare different approaches to graph embedding.
 \subsection{Graph Transformers}
 After the success of Transformers for NLP problems~\cite{kalyan2021ammus}, many researchers tried adapting the ideas of Transformer for graph machine learning problems, taking advantage of the benefits of global attention in graph models, thus a multitude of graph transformer models~\cite{dwivedi2021generalizationTransformer,2021graphormer,kreuzer2021rethinking,mialon2021graphit,wu2022representing} were published. Many of those ideas were leveraged in GraphGPS~\cite{2023graphgps}, as described in \autoref{sec:graphgps} and \autoref{sec:graphgps_hig}.
 
