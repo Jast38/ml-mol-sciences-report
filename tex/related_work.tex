@@ -111,7 +111,7 @@ Node2Vec has several advantages over previous methods for network embedding. Alt
 In conclusion, Node2Vec is a performant and popular node embedding model that can be applied to a wide range of downstream tasks, such as link prediction, node classification, and community detection.
 
 \subsubsection{Graph2Vec}
-Graph2Vec is a method for learning distributed representations of graphs proposed by Narayanan et al.~\cite{2017graph2vec}. This approach builds on top of the previously described Doc2Vec method, but contrary to learning representations for words or paragraphs, it learns representations for whole graphs.
+Graph2Vec is a method for unsupervised learning of distributed representations of graphs proposed by Narayanan et al.~\cite{2017graph2vec}. This approach builds on top of the previously described Doc2Vec method, but contrary to learning representations for words or paragraphs, it learns representations for whole graphs, that can be of arbitrary size. 
 
 Graph2Vec works by initially generating a set of subgraphs for each graph in the dataset, which can be seen as 'context graphs'. Those context graphs are then used to train a skip-gram neural network to learn embeddings for all graphs.
 
@@ -124,6 +124,8 @@ The skip-gram model used in Graph2Vec is similar to the one used in Word2Vec, bu
 Graph2Vec uses a negative sampling technique that is similar to the one used in Doc2Vec to train the model whose objective it is to maximize the probability of predicting the correct context graphs of a given graph, while minimizing the probability of predicting randomly sampled negative context graphs.
 
 The resulting embeddings capture the structural properties of the graphs, allowing them to be used for various downstream tasks. In our case, we will mainly use Graph2Vec as a benchmark and reference point.
+
+All discussed "2Vec" models are methods for unsupervised learning, meaning they don't need labeled input data. This is a key advantage in the usage of those methods, as they can easily be used for many different applications while not depending on existing labeled data, additionally, large amounts of data can be used to improve model performance.
 
 \subsection{Transformers}
 In 2017 Vaswani et al. proposed a new network architecture for Natural language processing (NLP) problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically.
