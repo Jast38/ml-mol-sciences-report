@@ -1,19 +1,10 @@
 \section{Introduction}
 
-Neural Networks are thriving in the modern society with software ranging from facial recognition to language translation augmenting humans day-to-day.
-In this aspect, Machine Learning (ML) for chemical sciences gains more and more value and therefore is the focus of an increasing amount of research.
-In consequence, an increasing amount of data regarding molecules are gathered and labeled, multiplying the amount of information that can be used to train ML models to help chemical discovery and molecule analysis to aid chemical discovery for drug development and molecule investigation.
+In today's world, Neural Networks have experienced tremendous growth, finding applications in diverse areas such as facial recognition and language translation, thus enhancing our daily lives. Although significant progress has been made in many research areas, there remains untapped potential for improvement in machine learning on graphs. Within this context, Machine Learning (ML) for chemical sciences is gaining increased attention and has become the focus of a rising number of research efforts. As a result, the collection and labeling of molecular data have surged, which in turn leads to a wealth of information available for training ML models. These models are poised to further advance chemical discovery and molecular analysis, ultimately benefiting areas such as drug development and molecular investigation.
 
 \subsection{Problem Domain}
 
-To aid in the improvement of ML models, benchmarks have been developed.
-A benchmark in a ML setting, is a site where models are compared against an accumulation of datasets, where the datasets are usually split into fixed training- and testing sets.
-The benchmark around which this project will be largely revolving is MoleculeNet.
-They tried a standardized approach for splitting their data, by creating more ways in which these datasets can be split, that can be applied to every dataset they have.
-
-As the MoleculeNet paper was published in 2018, we try to find and use methods already used in other context but not in the paper.
-We will set up a dataset-to-metric model for each benchmark using new tools in four areas: splitters, featurizers, deep learning, and transfer learning.
-These results will be compared against the best-known results from MoleculeNet. While we may not be able to enhance the best-known results, we will formulate our accumulated knowledge for future exploration.
+To facilitate the enhancement of ML models, benchmarks have been established. In a machine learning context, a benchmark serves as a platform for comparing models against a collection of datasets, which are divided into fixed training and testing sets. The primary benchmark for this project is MoleculeNet, which has sought to standardize dataset splitting by introducing multiple ways to divide the datasets that can be applied universally. Since the MoleculeNet paper was published in 2018, our objective is to identify and employ methods that have been utilized in other contexts but not in the paper.
 
 \subsection{Definitions}
 
@@ -21,9 +12,3 @@ A graph is a mathematical structure that consists of a set of vertices $V$ and a
 Similarly a attributed graph is a mathematical structure that consists of a set of vertices and a set of edges, where each vertex and edge has an attribute, e.g. $A(V \bigcup E) \to \Sigma^*$.
 While this basic definition does not specify any conditions on the attributes, it is possible to limit the attributes to a certain set of values.
 Some graph machine learning methods require the attributes to be of certain types or to provide certain functionality.
-
-\subsection{MoleculeNet}
-
-MoleculeNet~\cite{2018moleculenet} was introduced as a comprehensive benchmark for comparing ML models in molecular sciences, containing a multitude of tasks for molecular property prediction, among others including solubility, toxicity and bioactivity. Previously, there didn't exist a standardized evaluation platform for researchers to compare new machine learning algorithms and datasets were often small, as gathering molecular properties is an expensive task. MoleculeNet therefore aims to create a collection of datasets and evaluation tasks, enabling research teams to create meaningful and easily comparable performance measures for proposed ideas and algorithms. Furthermore MoleculeNet comes with a suite of tools to create and adapt ML models, containing implementation of many existing featurizers and algorithms for molecular machine learning.
-
-To make those tools available at one source, Wu et al. the package DeepChem~\cite{wu2023DeepChem} was created.

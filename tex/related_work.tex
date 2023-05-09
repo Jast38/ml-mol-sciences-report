@@ -1,8 +1,7 @@
 \section{Methodology and Related Work}
 
-As we started our project examining DeepChem, we first looked into handcrafted graph to vector methods.
-
-Later we looked into graph machine learning.
+\subsection{MoleculeNet}
+MoleculeNet~\cite{2018moleculenet} was introduced as a comprehensive benchmark for comparing ML models in molecular sciences, containing a multitude of tasks for molecular property prediction, among others including solubility, toxicity and bioactivity. Previously, there didn't exist a standardized evaluation platform for researchers to compare new machine learning algorithms and datasets were often small, as gathering molecular properties is an expensive task. MoleculeNet therefore aims to create a collection of datasets and evaluation tasks, enabling research teams to create meaningful and easily comparable performance measures for proposed ideas and algorithms. Furthermore MoleculeNet comes with a suite of tools to create and adapt ML models, containing implementation of many existing featurizers and algorithms for molecular machine learning. While we used the datasets from MoleculeNet, we accessed them through the Open Graph Benchmark python package.
 
 \subsection{Open Graph Benchmark}
 Open Graph Benchmark (OGB)~\cite{2021ogb} is a framework for benchmarking machine learning on graphs, providing large-scale, real world datasets as well as an easy to use software framework for loading  datasets and evaluating model performance.
