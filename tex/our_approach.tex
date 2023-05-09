@@ -55,9 +55,9 @@ A walk on graph is a sequence of vertices and edges, where each vertex is connec
     \label{figure:example_walk_to_sentence}
 \end{figure}
 
-Lets talk about a concrete example. In the left side of figure \ref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
+Lets talk about a concrete example. In the left side of \autoref{figure:example_walk_to_sentence} is an undirected graph with six vertices given. Each vertex has three numerical features. These features are given as list of integers below the node id. The red marked nodes form a walk from node 0 to node 5. On the right side of the figure, we listed the steps needed for each walk to generate the document needed for the downstream training: First we generate a walk, then we substitute the node id with the prefixed features and at last we concatenate the features into a sentence.
 
-Now we can formalize this method. Given a set of graphs $G = \{ g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{ w_i \mid i \in 0 \dots n \}$. Next, we create a new set $W'$ in which we substitute the node ID with the node features for each walk. If we consider each walk as a sentence, we obtain a set of documents (comprising of multiple sentences). These documents are then fed into a text embedding method. The pseudocode of our graph embedding method is provided in algorithm \ref{algorithm:basic_idea_walk_to_vector}.
+Now we can formalize this method. Given a set of graphs $G = \{ g_i \mid i \in 0 \dots n \}$, where $n$ is the number of graphs, we can generate a set of sets of walks $W = \{ w_i \mid i \in 0 \dots n \}$. Next, we create a new set $W'$ in which we substitute the node ID with the node features for each walk. If we consider each walk as a sentence, we obtain a set of documents (comprising of multiple sentences). These documents are then fed into a text embedding method. The pseudocode of our graph embedding method is provided in \autoref{algorithm:basic_idea_walk_to_vector}.
 
 \begin{minipage}{\linewidth}
     \begin{algorithm}[H]
@@ -96,7 +96,7 @@ In our initial approach, we employed the all-pair shortest paths method; however
 By performing the random selection of two nodes sample\_size times, we obtain the shortest path between them and add it to the list of walks. Assuming that sample\_size is sufficiently large, it is reasonable to expect that every node will be visited multiple times. This alternative approach offers a more manageable solution when working with extensive datasets.
 
 \subsection{Limits of information}
-With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to Figure \ref{figure:random_walk_cant_differentiate}. Both graphs consists of nodes that have the same feature, one is a circle, the other one a line. Each walk over one of the two graphs can be accommodated within the other graph as well. This hold true for random walks and for shortest paths.
+With an adequate quantity of walks over a graph, one can partially reconstruct the graph. However, there are limitations: For example, distinguishing between 'line' and 'circle' subgraphs is not always possible without any specific preparation of the graph. To illustrate this, refer to \autoref{figure:random_walk_cant_differentiate}. Both graphs consists of nodes that have the same feature, one is a circle, the other one a line. Each walk over one of the two graphs can be accommodated within the other graph as well. This hold true for random walks and for shortest paths.
 
 \begin{figure}[ht!]
     \begin{minipage}{\linewidth}
@@ -142,7 +142,7 @@ With an adequate quantity of walks over a graph, one can partially reconstruct t
     \label{figure:random_walk_cant_differentiate}
 \end{figure}
 
-These walks also have a hard time to give us information about the size of graph. Lets look at the example in figure \ref{figure:random_walk_cant_differentiate_regular}. All shortest paths as well as all random walks on one graph could also be done on the other. As a result, due to these inherent limitations, we did not expect walk-based whole graph embeddings to produce outstanding results.
+These walks also have a hard time to give us information about the size of graph. Lets look at the example in \autoref{figure:random_walk_cant_differentiate_regular}. All shortest paths as well as all random walks on one graph could also be done on the other. As a result, due to these inherent limitations, we did not expect walk-based whole graph embeddings to produce outstanding results.
 
 \begin{figure}[ht!]
     \begin{minipage}{\linewidth}
@@ -202,7 +202,7 @@ While Doc2Vec is easy to use, we don't use it the way it is intended to be used.
 For downstream training of the regressor or classifier, we followed scikit-learn's recommendations and chose Support Vector Regression (SVR) or Support Vector Classification (SVC) to train and generate the label prediction, given the vector generated by our method. In the case of multi-output prediction, we employed scikit-learn's multi-output methods but sticked to the mentioned regressors and classifiers for the individual task. To replace missing values in the training data, we utilized scikit-learn's SimpleImputer.
 
 \subsubsection{Results}
-Given the significant amount of data generated by random walks, which subsequently resulted in an extensive volume of training data for Doc2Vec, we focused on smaller datasets from the Open Graph Benchmark (OGB). For datasets with fewer than 10,000 graphs, we ran our model ten times; for those with less than 100,000 graphs, we executed it three times. We were unable run our method on larger datasets. The outcomes are presented in \autoref{table:ogbg-classification_results} and.
+Given the significant amount of data generated by random walks, which subsequently resulted in an extensive volume of training data for Doc2Vec, we focused on smaller datasets from the Open Graph Benchmark (OGB). For datasets with fewer than 10,000 graphs, we ran our model ten times; for those with less than 100,000 graphs, we executed it three times. We were unable run our method on larger datasets. The outcomes are presented in \autoref{table:ogbg-classification_results} and \autoref{table:ogbg-regression_results}.
 
 Our models was only able to generate meaningful results on ogbg-molbace, ogbg-molhiv, ogbg-molesol, ogbg-molfreesolv and ogbg-mollipo. For ogbg-molbace and ogbg-molhiv we achieved an ROC-AUC significant greater then 0.5 on multiple runs. The regression datasets were compared against randomly generated vectors using the same downstream model.
 
@@ -246,7 +246,7 @@ Our models was only able to generate meaningful results on ogbg-molbace, ogbg-mo
 \subsubsection{Conclusion}
 We guess that the observed suboptimal performance may be attributed to the fact that our method is only capable of capturing certain types of information from the graph. As previously discussed, walk-based embeddings encounter difficulties in accurately representing the structural aspects of a graph, such as size and subgraphs. Our interpretation of these results is, that our model is able to capture the composition of the graph, specifically the relationships between different types of nodes. However, due to our limited knowledge about the datasets, we are unable to judge whether this hypothesis is consistent with the tasks associated with these datasets.
 
-Some of the classification datasets are also quite unbalanced, as can be seen in table \ref{table:ogb_mol_datasets}, which make them harder to train on. Regression datasets in a way are easier to train on, as the they benefit even from a slight increase in information in the produced vectors.
+Some of the classification datasets are also quite unbalanced, as can be seen in \autoref{table:ogb_mol_datasets}, which make them harder to train on. Regression datasets in a way are easier to train on, as the they benefit even from a slight increase in information in the produced vectors.
 
 \subsubsection{Outlook}
 We don't think that our approach by itself will generate good results for whole graph embeddings. Nevertheless, it might be interesting to search for a reason, why our method produces meaningful results on some datasets but not on others. This might give insight into the dataset and the task to solve but also give insight into graph embeddings in general.
