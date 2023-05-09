@@ -5,7 +5,7 @@ As we started our project examining DeepChem, we first looked into handcrafted g
 Later we looked into graph machine learning.
 
 \subsection{Open Graph Benchmark}
-Open Graph Benchmark(OGB)~\cite{2021ogb} is a framework for benchmarking machine learning on graphs, providing large-scale, real world datasets as well as an easy to use software framework for loading  datasets and evaluating model performance.
+Open Graph Benchmark (OGB)~\cite{2021ogb} is a framework for benchmarking machine learning on graphs, providing large-scale, real world datasets as well as an easy to use software framework for loading  datasets and evaluating model performance.
 For comparing model performances, OGB provides leaderboards for different datasets and challenges, split into the sections Node Property Prediction, Link Property Prediction and Graph Property Prediction, as well as a large-scale challenge~\cite{hu2021ogblsc} leaderboard, which aids comparison of performance on very large graphs.
 
 Our main focus will be Graph Property Prediction, mainly on the datasets provided by MoleculeNet, those can be seen in~\autoref{table:ogb_mol_datasets}. All datasets are derived from MoleculeNet and added to OGB, each one respectively providing a large amount of molecules for molecular property prediction for different task types. Molecules are represented by graphs, where atoms are the nodes and corresponding chemical bonds are represented by the edges. Node features are represented as a 9-dimensional vector, edge feature vectors are 3-dimensional, the respective value ranges can be seen in \autoref{table:node_feature_list} and \autoref{table:edge_feature_list}.
