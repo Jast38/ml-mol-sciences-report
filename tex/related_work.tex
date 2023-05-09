@@ -34,35 +34,35 @@ Our main focus will be Graph Property Prediction, mainly on the datasets provide
 
 \begin{table}[!ht]
     \parbox{.49\linewidth}{
-    \centering
-    \begin{tabular}{lll} % TODO  Value Range should be replaced by data type
-        \toprule
-        index & feature            & feature type \\ \midrule
-        0     & atom number        & multi-class  \\
-        1     & chirality          & multi-class  \\
-        2     & degree             & multi-class  \\
-        3     & formal charge      & multi-class  \\
-        4     & number of H-atoms  & multi-class  \\
-        5     & number of radicals & multi-class  \\
-        6     & hybridization      & multi-class  \\
-        7     & is aromatic        & binary-class \\
-        8     & is in ring         & binary-class \\ \bottomrule
-    \end{tabular}
-    \caption{Node feature vector}
-    \label{table:node_feature_list}
+        \centering
+        \begin{tabular}{lll} % TODO  Value Range should be replaced by data type
+            \toprule
+            index & feature            & feature type \\ \midrule
+            0     & atom number        & multi-class  \\
+            1     & chirality          & multi-class  \\
+            2     & degree             & multi-class  \\
+            3     & formal charge      & multi-class  \\
+            4     & number of H-atoms  & multi-class  \\
+            5     & number of radicals & multi-class  \\
+            6     & hybridization      & multi-class  \\
+            7     & is aromatic        & binary-class \\
+            8     & is in ring         & binary-class \\ \bottomrule
+        \end{tabular}
+        \caption{Node feature vector}
+        \label{table:node_feature_list}
     }
     \hfill
     \parbox{.49\linewidth}{
-    \centering
-    \begin{tabular}{lll}
-        \toprule
-        index & feature       & feature type \\\midrule
-        0     & bond type     & multi-class  \\
-        1     & bond stereo   & multi-class  \\
-        2     & is conjugated & binary-class \\\bottomrule
-    \end{tabular}
-    \caption{Edge feature vector}
-    \label{table:edge_feature_list}
+        \centering
+        \begin{tabular}{lll}
+            \toprule
+            index & feature       & feature type \\\midrule
+            0     & bond type     & multi-class  \\
+            1     & bond stereo   & multi-class  \\
+            2     & is conjugated & binary-class \\\bottomrule
+        \end{tabular}
+        \caption{Edge feature vector}
+        \label{table:edge_feature_list}
     }
 \end{table}
 
@@ -73,7 +73,7 @@ We decided to use OGB as a benchmarking framework instead of the MoleculeNet ben
 \subsection{Doc2Vec}
 Doc2Vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2Vec, introduced by Le and Mikolov~\cite{2014doc2vec}, was built as an extension of the popular Word2Vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2Vec builds the base for many ideas regarding graph embedding.
 
-Doc2Vec learns a vector representation for each document in a corpus by utilizing a so called Paragraph Vectors. The architecture is similar to that of Word2Vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory version of Paragraph Vector (PV-DM) and Distributed Bag of Words version of Paragraph Vector (PV-DBOW).
+Doc2Vec learns a vector representation for each document in a corpus by utilizing so called Paragraph Vectors. The architecture is similar to that of Word2Vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory version of Paragraph Vector (PV-DM) and Distributed Bag of Words version of Paragraph Vector (PV-DBOW).
 
 In the PV-DM model, the document vector is trained to predict the next word in a randomly sampled sequence of words, with the document vector and a window of surrounding words as input. The document vector is then updated alongside the word vectors during backpropagation. This model captures the overall topic and meaning of the document, as it has access to all words in the document.
 
@@ -84,9 +84,11 @@ In both models, the document vector is learned by optimizing a loss function, ty
 Doc2Vec has been shown to outperform other methods for document embeddings in several benchmark datasets and downstream tasks. This idea of capturing the semantics and meaning of the documents was the basis for many future implementations and also layed the path for good algorithms regarding graph embedding.
 
 \subsection{Graph Embedding}
-Graph embedding is a technique in graph machine learning that maps nodes and edges of a graph into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems, and molecular sciences.
+Graph embedding is a technique in graph machine learning that maps nodes, edges or whole graphs into a low-dimensional vector space while preserving the graph structure and semantic information. This technique has become increasingly popular due to its usefulness in various applications such as social network analysis, recommendation systems and molecular sciences.
 
-The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors. This was visualized very nice by Google Research~\cite{epasto2019embedding} as seen in \autoref{fig:graph_embedding}. As seen here, overlapping communities are pulled apart while similar nodes are grouped together.
+The goal for this technique is to produce a vector which can be used as input for various existing machine-learning models and techniques, elevating their usefulness to graphs. To achieve a good representation for those graphs, local and global structural information has to be encoded into such vectors.
+
+Graph Embedding was visualized very nice by Google Research~\cite{epasto2019embedding} as seen in \autoref{fig:graph_embedding}. As seen here, overlapping communities are pulled apart while similar nodes are grouped together.
 
 \begin{figure}[h!]
     \centering
@@ -106,12 +108,12 @@ Node2Vec uses a biased random walk strategy, that balances the trade-off between
 
 After the random walks are generated, Node2Vec uses the skip-gram model to learn node embeddings by maximizing the likelihood of predicting the correct context nodes given the current node. To train the skip-gram model, negative sampling is used, which samples negative nodes that are not in the context set and adjusts the embedding vectors to minimize the difference between the predicted and actual context sets.
 
-Node2Vec has several advantages over previous methods for network embedding. Although being scalable to large networks and being able to handle diverse networks with multiple types of nodes and edges, it can still capture both the local and global structure of the network by tuning the $p$ and $q$ parameters. Additionally, it can handle noisy or incomplete networks by incorporating information from the context nodes, alleviating missing data. 
+Node2Vec has several advantages over previous methods for network embedding. Although being scalable to large networks and being able to handle diverse networks with multiple types of nodes and edges, it can still capture both the local and global structure of the network by tuning the $p$ and $q$ parameters. Additionally, it can handle noisy or incomplete networks by incorporating information from the context nodes, alleviating missing data.
 
 In conclusion, Node2Vec is a performant and popular node embedding model that can be applied to a wide range of downstream tasks, such as link prediction, node classification, and community detection.
 
 \subsubsection{Graph2Vec}
-Graph2Vec is a method for unsupervised learning of distributed representations of graphs proposed by Narayanan et al.~\cite{2017graph2vec}. This approach builds on top of the previously described Doc2Vec method, but contrary to learning representations for words or paragraphs, it learns representations for whole graphs, that can be of arbitrary size. 
+Graph2Vec is a method for unsupervised learning of distributed representations of graphs proposed by Narayanan et al.~\cite{2017graph2vec}. This approach builds on top of the previously described Doc2Vec method, but contrary to learning representations for words or paragraphs, it learns representations for whole graphs, that can be of arbitrary size.
 
 Graph2Vec works by initially generating a set of subgraphs for each graph in the dataset, which can be seen as 'context graphs'. Those context graphs are then used to train a skip-gram neural network to learn embeddings for all graphs.
 
@@ -141,20 +143,20 @@ The Transformer architecture is build of many layers, each containing a self-att
 
 Here $Q$, $K$, and $V$ are calculated by multiplying the input $H$ of the attention module with the respective matrices $W_Q\in\Rbb^{d\times d_K}, W_K\in\Rbb^{d\times d_K}$ and $ W_V\in\Rbb^{d\times d_V}$ which then represent Queries, Keys and Values of the attention module. Those matrices are learnable and are produced during the training of the model.
 
-Queries are basically one-hot feature vectors, representing the features of interest, which are then multiplied with the transposed Key matrix to get feature specific masks (denoted as $A$ above). Those masks are then used during Attention to isolate specific features from the values (denoted in $\attn{H}$ above), increasing the correctness of value predictions.
+Queries are basically one-hot feature vectors, representing the features of interest, which are then multiplied with the transposed Key matrix to get feature specific masks (denoted as $A$ above). Those masks are then used during attention to isolate specific features from the values (denoted in $\attn{H}$ above), increasing the correctness of value predictions.
 
-$d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
+$d$ denotes the hidden dimensions, which in case of single-head self-attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the Value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
 
 After each self-attention module follows a feedforward neural network, denoted in line $(3)$ of \autoref{eqn:attention-alpha2}. During this step, ReLU is used to drown out negative values, $x$ are masked word activities, $(W_1 + b_1)$ denotes a multi-word feature creation matrix and $(W_2 + b_2)$ is a transition matrix.
 
-As Transformer models achieved astonishing performance for NLP problems, they layed the path for a lot of research. Many teams tried to adapt the idea to graph machine learning, leading to interesting findings and proposals of many performant models, all using Transformer architecture as their starting point. Transformers and adaptions for graphs are all used in GraphGPS~\cite{2023graphgps}, which we will describe later and use as a testing framework to compare different approaches to graph embedding.
+As Transformer models achieved astonishing performance for NLP problems, they layed the path for a lot of research. Many teams tried to adapt the idea to graph machine learning, leading to interesting findings and proposals of many performant models, all using Transformer architecture as their starting point. Transformers and adaptions for graphs are used in GraphGPS~\cite{2023graphgps}, which we will describe later and use as a testing framework to compare different approaches to graph embedding.
 \subsection{Graph Transformers}
 After the success of Transformers for NLP problems~\cite{kalyan2021ammus}, many researchers tried adapting the ideas of Transformer for graph machine learning problems, taking advantage of the benefits of global attention in graph models, thus a multitude of graph transformer models~\cite{dwivedi2021generalizationTransformer,2021graphormer,kreuzer2021rethinking,mialon2021graphit,wu2022representing} were published. Many of those ideas were leveraged in GraphGPS~\cite{2023graphgps}, as described in \ref{sec:graphgps} and \ref{sec:graphgps_hig}.
 
 \subsubsection{Graph Transformer Networks}
 GTNs, proposed by Dwivedi et al.~\cite{dwivedi2021generalizationTransformer}, are designed to leverage graph sparsity and positional encodings and add them as a bias during self-attention. Attending to the whole graph is often not feasible because of graph size and node count, therefore GTNs only attend to the local neighborhood of nodes. Additionally, positional encodings are leveraged, to alleviate the missing structural information using Transformers, thus encoding important graph structural information into the Transformer. Positional encodings are created using Laplacian eigenvectors~\cite{belkin2003laplacian}, which are added to the node features.
 
-The key differences of GTNs with respect to original Transformers are the following. Neighborhood connectivity is used as the function for the attention mechanism, which is done by computing a weighted sum of the surrounding node embeddings. Positional encodings are replaced by Laplacian eigenvectors, which are precomputed for each graph and additionally, edge representations are added, to engrain important edge information into the model. Those edge features are learned by a separate feed-forward neural network, which takes the concatenated node embeddings as an input and the resulting edge features are again used in self-attention to update node embeddings.
+The key differences of GTNs with respect to original Transformers are the following: Neighborhood connectivity is used as the function for the attention mechanism, which is done by computing a weighted sum of the surrounding node embeddings. Positional encodings are replaced by Laplacian eigenvectors, which are precomputed for each graph and additionally, edge representations are added, to engrain important edge information into the model. Those edge features are learned by a separate feed-forward neural network, which takes the concatenated node embeddings as an input and the resulting edge features are again used in self-attention to update node embeddings.
 
 
 \subsubsection{Graphormer}
@@ -162,7 +164,7 @@ As an adaption of Transformers~\cite{vaswani2017attention} for graph representat
 
 Graphormer achieves such good results by introducing three types of encodings as a bias to the self-attention mechanism used in Transformer architecture. While Transformer models work by computing weighted sum of input features based on attention scores between different tokens during self-attention, Graphormer incorporates structural information of different nodes in pairwise relation to each other into the self-attention mechanism, thus increasing the information encapsuled in the self-attention module, which is held by graph structures and features present.
 
-To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing learnable embedding vectors, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are scalars which are added to the features of each node, so node importance and semantic correlation are respected during self attention. Those scalars are indexed from two vectors according to the respective degrees as seen in \autoref{fig:graphormer_centr_enc}.
+To capture information about the importance of a node in a given network, Graphormer uses a measure called node centrality by utilizing degree centrality of a given node. This is done by introducing learnable embedding vectors, one for the degree of ingoing edges and one for the outgoing ones. Those vectors are scalars which are added to the features of each node, so node importance and semantic correlation are respected during self-attention. Those scalars are indexed from two vectors according to the respective degrees as seen in \autoref{fig:graphormer_centr_enc}.
 
 \begin{figure}[h!]
     \centering
@@ -199,7 +201,7 @@ Finally Graphormer introduces a method to include edge information in the model 
 \label{sec:graphgps}
 L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Powerful, Scalable Graph Transformer.'~\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.
 
-GraphGPS serves as a preprocessor for the actual model learning on the dataset. The authors tested GraphGPS with several models, such as Transformer, Performer, BigBird, Gine, and more. They designed it to allow models that permit only Node Features, known as the Global Attention layer, as well as models that permit both Node and Edge Features, known as the MPNN layer. Both layers can also be used in combination to integrate the distinct advantages of two models.
+GraphGPS serves as a preprocessor for the actual model learning on the dataset. The authors tested GraphGPS with several models, such as Transformer, Performer, BigBird and more. They designed it to allow models that permit only Node Features, known as the Global Attention layer, as well as models that permit both Node and Edge Features, known as the MPNN layer. Both layers can also be used in combination to integrate the distinct advantages of two models.
 
 The authors categorized structural and positional information into two types since the distance between nodes, although indicating the graph's structure, is insufficient to capture structural similarities. They incorporated this information by utilizing structural and positional encodings (SE and PE), which are divided into Local, Global, and Relative categories. Local and Global encodings are implemented as node features, while Relative encodings are implemented as edge features.
 
