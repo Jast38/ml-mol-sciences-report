@@ -72,7 +72,7 @@ We additionally used ogb-molfreesolv as a smaller dataset which is also derived 
 
 We decided to use OGB as a benchmarking framework instead of the MoleculeNet benchmark results, because OGB submissions are much more versatile and active, containing results from many research teams with the latest submission for ogb-molhiv dating to May 2022, contrary to the MoleculeNet results which were provided by the authors of the paper only and are dated to January 2018.
 
-\subsubsection{Doc2Vec}
+\subsection{Doc2Vec}
 Doc2Vec is a widely used method for obtaining distributed representations of documents as continuous vectors in a low-dimensional space, also known as paragraph embeddings. Doc2Vec, introduced by Le and Mikolov~\cite{2014doc2vec}, was built as an extension of the popular Word2Vec algorithm~\cite{mikolov2013distributed} to the domain of entire documents and together with Word2Vec builds the base for many ideas regarding graph embedding.
 
 Doc2Vec learns a vector representation for each document in a corpus by utilizing a so called Paragraph Vectors. The architecture is similar to that of Word2Vec but includes an additional vector representation for each document. There are two ways to obtain document vectors: Distributed Memory version of Paragraph Vector (PV-DM) and Distributed Bag of Words version of Paragraph Vector (PV-DBOW).
@@ -98,7 +98,7 @@ The goal for this technique is to produce a vector which can be used as input fo
 \end{figure}
 
 There is a multitude of different ideas and methods to create graph embeddings, we will focus mainly on random walk embeddings and deep learning approaches, to be exact most methods are combinations of those ideas~\cite{2017graph2vec,2016node2vec,2021graphormer}.
-\subsection{Node2Vec}
+\subsubsection{Node2Vec}
 
 Node2Vec, presented by Grover and Leskovec in 2016~\cite{2016node2vec}, is a framework for learning low-dimensional representations of nodes in large-scale networks. The goal of Node2Vec is to learn embeddings that capture the structural information of nodes, such as their connectivity patterns, in a way that is useful for downstream tasks, such as node classification, clustering, and link prediction, i.e. lowering the complexity of large network structures and encapsulating as much information as possible in a less complex structure, as seen in~\autoref{fig:graph_embedding}.
 
@@ -128,7 +128,7 @@ Graph2Vec uses a negative sampling technique that is similar to the one used in 
 The resulting embeddings capture the structural properties of the graphs, allowing them to be used for various downstream tasks. In our case, we will mainly use Graph2Vec as a benchmark and reference point.
 
 \subsection{Transformers}
-In 2017 Vaswani et al. proposed a new network architecture for NLP problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically.
+In 2017 Vaswani et al. proposed a new network architecture for Natural language processing (NLP) problems, called the Transformer~\cite{vaswani2017attention}. Abstractly speaking, Transformers consider input sentences as a connected system of words, thus attending on all other words while learning the meaning of one specifically.
 
 The Transformer architecture is build of many layers, each containing a self-attention module and a position-wise feed-forward network. Self-attention is then calculated as described in~\cite{2021graphormer}:
 
@@ -145,7 +145,7 @@ Queries are basically one-hot feature vectors, representing the features of inte
 
 $d$ denotes the hidden dimensions, which in case of single-head self attention is the same as $d_K$ and $d_V$. The hidden dimension is the dimension of the key vectors, in case of \cite{vaswani2017attention} this was $64$.This leads to the equation for the attention matrix above and its adaption for Graphormer in \autoref{eqn:attention-matrix}. The result of this equation is the softmax score, which is then multiplied with the value vectors. The sum of those weighted vectors is the output of the self-attention module. By doing this, other tokens of the input which are seen as relevant, will continue upwards while non relevant tokens are drowned with a small softmax score.
 
-After each self-attention module follows a feedworard neural network, denoted in line $(3)$ of \autoref{eqn:attention-alpha2}. During this step, ReLU is used to drown out negative values, $x$ are masked word activities, $(W_1 + b_1)$ denotes a multi-word feature creation matrix and $(W_2 + b_2)$ is a transition matrix.
+After each self-attention module follows a feedforward neural network, denoted in line $(3)$ of \autoref{eqn:attention-alpha2}. During this step, ReLU is used to drown out negative values, $x$ are masked word activities, $(W_1 + b_1)$ denotes a multi-word feature creation matrix and $(W_2 + b_2)$ is a transition matrix.
 
 As Transformer models achieved astonishing performance for NLP problems, they layed the path for a lot of research. Many teams tried to adapt the idea to graph machine learning, leading to interesting findings and proposals of many performant models, all using Transformer architecture as their starting point. Transformers and adaptions for graphs are all used in GraphGPS~\cite{2023graphgps}, which we will describe later and use as a testing framework to compare different approaches to graph embedding.
 \subsection{Graph Transformers}
@@ -195,7 +195,7 @@ Finally Graphormer introduces a method to include edge information in the model 
     \label{eqn:bias_2}
 \end{equation}
 
-\subsubsection{GraphGPS}
+\subsection{GraphGPS}
 \label{sec:graphgps}
 L. Rampásek et al. introduced GraphGPS in their paper 'Recipe for a General, Powerful, Scalable Graph Transformer.'~\cite{2023graphgps} The objective of this model recipe is to provide a foundation for incorporating structural and positional information into node and edge features, while maintaining the flexibility of the model that implements these features.
 
@@ -210,7 +210,7 @@ The authors categorized structural and positional information into two types sin
     \label{fig:gps-abstract}
 \end{figure}
 
-\subsubsection{Heterogeneous Interpolation on Graphs}
+\subsection{Heterogeneous Interpolation on Graphs}
 A winning entry for the dataset ogb-molpcba, called HIG-GraphClassification~\cite{tencenc2021Hig,tencenc2021HigPaper} was submitted to the OGB leaderboard in 2021 by Wang et al., providing an implementation and a brief technical report describing the research. By using their method combined with Graphormer, they were able to achieve better average precision than all previous submissions.
 
 The report introduces heterogeneous interpolation, which is done by dropping the feature vectors of several randomly selected nodes and replacing them by the interpolated feature mix of all neighboring nodes.
